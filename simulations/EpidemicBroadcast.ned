@@ -15,17 +15,27 @@
 
 package epidemicbroadcast.simulations;
 
-import epidemicbroadcast.Txc;
+import epidemicbroadcast.User;
 
 //
 // Two instances (tic and toc) of Txc connected.
 //
-network Tictoc
+
+network EpidemicBroadcast
 {
+
+	parameters:
+		int nUser;
+		node[0].sendInitialMessage = true;
+		int range = default(300);
+		
     submodules:
-        tic: Txc;
-        toc: Txc;
+    	node[nUser]: User;
+           
     connections:
-        tic.out --> {delay = 100ms;} --> toc.in;
-        tic.in <-- {delay = 100ms;} <-- toc.out;
+        for i=0..sizeof(node)-2, for j=(i+1)..sizeof(node)-1 {    		
+			node[i].gate++ <--> {delay = 1000ms;} <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
+    	}   	
+    	
+
 }

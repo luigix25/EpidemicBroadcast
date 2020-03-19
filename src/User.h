@@ -13,17 +13,27 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package epidemicbroadcast;
+#ifndef __EPIDEMICBROADCAST_TCX_H
+#define __EPIDEMICBROADCAST_TCX_H
 
-//
-// Immediately sends out any message it receives. It can optionally generate
-// a message at the beginning of the simulation, to bootstrap the process.
-//
-simple Txc
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace epidemicbroadcast {
+
+/**
+ * Implements the Txc simple module. See the NED file for more information.
+ */
+class User : public cSimpleModule
 {
-    parameters:
-        bool sendInitialMessage = default(false);
-    gates:
-        input in;
-        output out;
-}
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void broadcastMessage(cMessage *msg);
+
+};
+
+}; // namespace
+
+#endif

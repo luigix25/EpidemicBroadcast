@@ -13,25 +13,49 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "Txc.h"
+#include "User.h"
 
 namespace epidemicbroadcast {
 
-Define_Module(Txc);
+Define_Module(User);
 
-void Txc::initialize()
+void User::initialize()
 {
     if (par("sendInitialMessage").boolValue())
     {
+        EV<<"MASTER!!"<<endl;
         cMessage *msg = new cMessage("tictocMsg");
-        send(msg, "out");
+        broadcastMessage(msg);
     }
+
+    int posX = par("posX").intValue();
+    int posY = par("posY").intValue();
+
+    EV<<"X: "<<posX<<" Y: "<<posY<<endl;
+
 }
 
-void Txc::handleMessage(cMessage *msg)
+void User::handleMessage(cMessage *msg)
 {
+    EV << "Received a frame" << endl;
+
     // just send back the message we received
-    send(msg, "out");
+    broadcastMessage(msg);
+
 }
+
+void User::broadcastMessage(cMessage *msg){
+
+    for (int i = 0; i < gateSize("gate$o"); i++)
+    {
+        cMessage *copy = msg->dup();
+        send(copy, "gate$o", i);
+        EV<<"Sending Message "<<endl;
+    }
+
+    delete msg;
+
+}
+
 
 }; // namespace

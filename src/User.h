@@ -28,6 +28,10 @@ namespace epidemicbroadcast {
 class User : public cSimpleModule
 {
   protected:
+
+    bool transmitted = false;
+
+
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void broadcastMessage(cMessage *msg);

@@ -37,10 +37,12 @@ void User::initialize()
 
 void User::handleMessage(cMessage *msg)
 {
-    EV << "Received a frame" << endl;
+    EV << "Received a frame at "<< simTime() << endl;
 
     // just send back the message we received
-    broadcastMessage(msg);
+    if(!this->transmitted){
+        broadcastMessage(msg);
+    }
 
 }
 
@@ -54,6 +56,8 @@ void User::broadcastMessage(cMessage *msg){
     }
 
     delete msg;
+
+    this->transmitted = true;
 
 }
 

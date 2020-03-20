@@ -1,0 +1,4 @@
+1) tempo di propagazione nullo, dato che sarebbe praticamente trascurabile ( chiedere conferma )
+2) intervallo T randomico, altrimenti collisioni assicurate ( chiedere )
+3) durata slot 1 secondo
+4) se ricevo più di m messaggi nell'intervallo, riparte il timer o mi fermo?

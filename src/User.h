@@ -22,26 +22,34 @@ using namespace omnetpp;
 
 namespace epidemicbroadcast {
 
+enum status{WAITING, SCHEDULING, LISTENING};
+
 /**
  * Implements the Txc simple module. See the NED file for more information.
  */
 class User : public cSimpleModule
 {
     private:
-        //Node did transmit or not
-        bool didTransmit                = false;
+
 
         //Time when last message is received
-        simtime_t lastMessageTime;
+        simtime_t lastMessageTime = -1;
+
+        //Current Status of the Node
+        status currentStatus;
 
         //Collision did occur in a time slot
         bool collided                   = false;
+
+        bool messageReceived            = false;
+
+        cMessage* scheduledMessage;
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);
 
         void handleCollision();
-
+        void handleSelfMessage(cMessage *msg);
 
     protected:
 
@@ -49,11 +57,13 @@ class User : public cSimpleModule
         unsigned short collisions      = 0;
 
         //Number of packets received in T time slots
-        unsigned short receivedPackets = 0;
+        unsigned short receivedPacketsInTSlots  = 0;
+        //Number of packets received globally without collisions
+        unsigned short receivedPackets          = 0;
 
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
-
+        virtual void finish();
 };
 
 }; // namespace

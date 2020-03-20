@@ -25,6 +25,9 @@ simple User
     parameters:
         bool sendInitialMessage = default(false);
         
+        int m					= default(3);
+        int T					= default(5);
+        
 		int posX = default(intuniform (0,600));
 		int posY = default(intuniform (0,600));    		
 		@display("p=$posX,$posY");    

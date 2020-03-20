@@ -26,10 +26,13 @@ void User::initialize()
         EV<<"MASTER!!"<<endl;
         cMessage *msg = new cMessage("tictocMsg");
         broadcastMessage(msg);
+        this->messageReceived = true;
     }
 
     int posX = par("posX").intValue();
     int posY = par("posY").intValue();
+
+    this->currentStatus = WAITING;
 
     EV<<"X: "<<posX<<" Y: "<<posY<<endl;
 
@@ -40,28 +43,47 @@ void User::handleMessage(cMessage *msg)
     EV << "Received a frame at "<< simTime() << endl;
 
     if(msg->isSelfMessage()){
-        //doQualcosa()
-
+        handleSelfMessage(msg);
         return;
     }
 
     simtime_t currentTime = simTime();
 
     //Collision occured!!!
-    if(this->lastMessageTime != null and currentTime == this->lastMessageTime){
+    if(currentTime == this->lastMessageTime){
+        EV<<"Collisione!! "<<currentTime<<endl;
         handleCollision();
+        return;
     }
 
+    //No collision, slot is changed since last time!
+    this->collided = false;
+
+
+    switch(this->currentStatus){
+        case WAITING:
+
+            scheduledMessage = msg->dup();
+            //TODO: sistemareProb
+            scheduleAt(currentTime+intuniform(0,2),scheduledMessage);
+            this->currentStatus = SCHEDULING;
+            EV<<"Status from waiting to scheduling"<<endl;
+
+            break;
+
+        case SCHEDULING:
+            this->currentStatus = LISTENING;
+            EV<<"Status from waiting to scheduling"<<endl;
+
+
+        case LISTENING:
+            this->receivedPackets++;
+            break;
+
+    }
 
     this->lastMessageTime = currentTime;
 
-
-    //this->receivedPackets++;
-
-    // just send back the message received
-    if(!this->didTransmit){
-        broadcastMessage(msg);
-    }
 
 }
 
@@ -71,12 +93,10 @@ void User::broadcastMessage(cMessage *msg){
     {
         cMessage *copy = msg->dup();
         send(copy, "gate$o", i);
-        EV<<"Sending Message "<<endl;
+        EV<<"Sending Message"<<endl;
     }
 
     delete msg;
-
-    this->transmitted = true;
 
 }
 
@@ -90,9 +110,45 @@ void User::handleCollision(){
     this->collisions++;
 
     //Message received was not valid
-    this->receivedPackets--;
+
+    switch(this->currentStatus){
+        case SCHEDULING:                     //time is changed, so there is no collision
+
+            this->receivedPackets = 0;
+            cancelEvent(this->scheduledMessage);
+            delete this->scheduledMessage; //(?)
+            EV<<"Status from SCHEDULING to WAITING"<<endl;
+
+            this->currentStatus = WAITING;
+
+            break;
+
+        case LISTENING:
+            this->receivedPackets--;
+            break;
+    }
 
 }
+
+void User::handleSelfMessage(cMessage *msg){
+
+    int m = par("m").intValue();
+
+    if(this->receivedPackets < m){
+        broadcastMessage(msg);
+        //TODO: controllare gestione memoria delete msg;
+    } else {
+        EV<<"Broadcast suppressed"<<endl;
+    }
+
+}
+
+void User::finish(){
+    EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<endl;
+
+}
+
+
 
 
 }; // namespace

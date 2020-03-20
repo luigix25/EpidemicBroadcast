@@ -25,14 +25,11 @@ simple User
     parameters:
         bool sendInitialMessage = default(false);
         
-        
-        //TODO: indagare default e volatile
-        int posX = default(intuniform (0,600));
+		int posX = default(intuniform (0,600));
 		int posY = default(intuniform (0,600));    		
 		@display("p=$posX,$posY");    
 		    
     gates:
         inout 	gate[];
-        //output out[];
 }
 

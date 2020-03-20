@@ -27,14 +27,32 @@ namespace epidemicbroadcast {
  */
 class User : public cSimpleModule
 {
-  protected:
+    private:
+        //Node did transmit or not
+        bool didTransmit                = false;
 
-    bool transmitted = false;
+        //Time when last message is received
+        simtime_t lastMessageTime;
+
+        //Collision did occur in a time slot
+        bool collided                   = false;
+
+        //Sends the message in broadcast
+        void broadcastMessage(cMessage *msg);
+
+        void handleCollision();
 
 
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void broadcastMessage(cMessage *msg);
+    protected:
+
+        //Total number of collisions
+        unsigned short collisions      = 0;
+
+        //Number of packets received in T time slots
+        unsigned short receivedPackets = 0;
+
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
 
 };
 

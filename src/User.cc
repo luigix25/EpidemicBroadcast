@@ -39,8 +39,27 @@ void User::handleMessage(cMessage *msg)
 {
     EV << "Received a frame at "<< simTime() << endl;
 
-    // just send back the message we received
-    if(!this->transmitted){
+    if(msg->isSelfMessage()){
+        //doQualcosa()
+
+        return;
+    }
+
+    simtime_t currentTime = simTime();
+
+    //Collision occured!!!
+    if(this->lastMessageTime != null and currentTime == this->lastMessageTime){
+        handleCollision();
+    }
+
+
+    this->lastMessageTime = currentTime;
+
+
+    //this->receivedPackets++;
+
+    // just send back the message received
+    if(!this->didTransmit){
         broadcastMessage(msg);
     }
 
@@ -58,6 +77,20 @@ void User::broadcastMessage(cMessage *msg){
     delete msg;
 
     this->transmitted = true;
+
+}
+
+void User::handleCollision(){
+
+    //Collision Already Handled
+    if(this->collided)
+        return;
+
+    this->collided = true;
+    this->collisions++;
+
+    //Message received was not valid
+    this->receivedPackets--;
 
 }
 

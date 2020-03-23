@@ -28,8 +28,16 @@ simple User
         int m					= default(3);
         int T					= default(5);
         
-		int posX = default(intuniform (0,600));
-		int posY = default(intuniform (0,600));    		
+		int RNGPosition			= default(1);
+    	int RNGBackoff			= default(2);
+    	
+    	int XLimit				= default(600);
+    	int YLimit				= default(600);
+        
+    	int maxBackoffWait		= default(4);
+
+		int posX = default(intuniform (0, XLimit, RNGPosition));
+		int posY = default(intuniform (0, YLimit, RNGPosition));    		
 		@display("p=$posX,$posY");    
 		    
     gates:

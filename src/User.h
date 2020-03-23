@@ -31,7 +31,6 @@ class User : public cSimpleModule
 {
     private:
 
-
         //Time when last message is received
         simtime_t lastMessageTime = -1;
 
@@ -42,6 +41,11 @@ class User : public cSimpleModule
         bool collided                   = false;
 
         cMessage* scheduledMessage;
+
+        //RNG to be used for Backoff computation
+        int RNGBackoff;
+
+        int maxBackoffWait;
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);

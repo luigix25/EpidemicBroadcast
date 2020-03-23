@@ -25,13 +25,13 @@ network EpidemicBroadcast
 {
 
 	parameters:
-		int nUser;
+		int nUsers;
 		node[0].sendInitialMessage 	= true;
 		int range 					= default(300);
 		int slotSize 				= default(1);
 		
     submodules:
-    	node[nUser]: User;
+    	node[nUsers]: User;
            
     connections:
         for i=0..sizeof(node)-2, for j=(i+1)..sizeof(node)-1 {    		

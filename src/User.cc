@@ -25,16 +25,18 @@ void User::initialize()
     int posX = par("posX").intValue();
     int posY = par("posY").intValue();
 
-    this->currentStatus = WAITING;
-
     EV<<"X: "<<posX<<" Y: "<<posY<<endl;
+
+    this->RNGBackoff        = par("RNGBackoff").intValue();
+    this->maxBackoffWait    = par("maxBackoffWait").intValue();
+
+    this->currentStatus = WAITING;
 
     if (par("sendInitialMessage").boolValue())
     {
         EV<<"MASTER!!"<<endl;
         cMessage *msg = new cMessage("tictocMsg");
         broadcastMessage(msg);
-//        this->messageReceived = true;
         this->currentStatus = DONE;
         delete msg;
     }
@@ -70,7 +72,7 @@ void User::handleMessage(cMessage *msg)
 
             scheduledMessage = msg->dup();
             //TODO: sistemareProb
-            scheduleAt(currentTime+intuniform(1,4),scheduledMessage);               //non posso schedulare nello stesso slot
+            scheduleAt(currentTime+intuniform(1,this->maxBackoffWait,this->RNGBackoff),scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
             EV<<"Status from waiting to scheduling"<<endl;
 

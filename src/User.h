@@ -41,8 +41,6 @@ class User : public cSimpleModule
         //Collision did occur in a time slot
         bool collided                   = false;
 
-//        bool messageReceived            = false;
-
         cMessage* scheduledMessage;
 
         //Sends the message in broadcast
@@ -64,6 +62,8 @@ class User : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
+
+        //~User();
 };
 
 }; // namespace

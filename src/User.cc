@@ -36,6 +36,7 @@ void User::initialize()
         broadcastMessage(msg);
 //        this->messageReceived = true;
         this->currentStatus = DONE;
+        delete msg;
     }
 
 }
@@ -159,7 +160,6 @@ void User::finish(){
     EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
 }
-
 
 
 

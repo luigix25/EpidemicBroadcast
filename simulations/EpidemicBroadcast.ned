@@ -35,8 +35,8 @@ network EpidemicBroadcast
            
     connections:
         for i=0..sizeof(node)-2, for j=(i+1)..sizeof(node)-1 {    		
-			node[i].gate++ <--> {delay = 1000ms;} <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
-			//node[i].gate++ <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
+			//node[i].gate++ <--> {delay = 1000ms;} <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
+			node[i].gate++ <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
     	
     	}   	
     	

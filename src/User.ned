@@ -25,16 +25,19 @@ simple User
     parameters:
         bool sendInitialMessage = default(false);
         
-        int m					= default(3);
-        int T					= default(5);
+        int m								= default(3);
+        int T								= default(5);
         
-		int RNGPosition			= default(1);
-    	int RNGBackoff			= default(2);
+		int RNGPosition						= default(1);
+    	int RNGBackoff						= default(2);
     	
-    	int XLimit				= default(600);
-    	int YLimit				= default(600);
+    	int XLimit							= default(600);
+    	int YLimit							= default(600);
         
-    	int maxBackoffWait		= default(4);
+    	int maxBackoffWait					= default(4);
+    	
+		int slotSize @unit(milliseconds)	= default(100ms);
+
 
 		int posX = default(intuniform (0, XLimit, RNGPosition));
 		int posY = default(intuniform (0, YLimit, RNGPosition));    		

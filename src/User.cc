@@ -29,6 +29,7 @@ void User::initialize()
 
     this->RNGBackoff        = par("RNGBackoff").intValue();
     this->maxBackoffWait    = par("maxBackoffWait").intValue();
+    this->slotSize          = par("slotSize").intValue();
 
     this->currentStatus = WAITING;
 
@@ -54,9 +55,9 @@ void User::handleMessage(cMessage *msg)
 
     simtime_t currentTime = simTime();
 
-    //Collision occured!!!
+    //Collision occurred!!!
     if(currentTime == this->lastMessageTime){
-        EV<<"Collisione!! "<<currentTime<<endl;
+        EV<<"Collision!! "<<currentTime<<endl;
         handleCollision();
         delete msg;
         return;
@@ -66,13 +67,16 @@ void User::handleMessage(cMessage *msg)
     this->collided = false;
     this->receivedPackets++;
 
+    simtime_t delayTime;
 
     switch(this->currentStatus){
         case WAITING:
 
             scheduledMessage = msg->dup();
-            //TODO: sistemareProb
-            scheduleAt(currentTime+intuniform(1,this->maxBackoffWait,this->RNGBackoff),scheduledMessage);               //non posso schedulare nello stesso slot
+            //TODO: sistemareProb, /1000 brutto
+            delayTime = this->slotSize * intuniform(1, this->maxBackoffWait,this->RNGBackoff) / 1000.0;
+
+            scheduleAt(currentTime + delayTime ,scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
             EV<<"Status from waiting to scheduling"<<endl;
 
@@ -102,7 +106,8 @@ void User::broadcastMessage(cMessage *msg){
     for (int i = 0; i < gateSize("gate$o"); i++)
     {
         cMessage *duplicate = msg->dup();
-        send(duplicate, "gate$o", i);
+        //TODO: diviso 1000 è brutto
+        sendDelayed(duplicate,this->slotSize/1000.0, "gate$o", i);
         EV<<"Sending Message"<<endl;
     }
 

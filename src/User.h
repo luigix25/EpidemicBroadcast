@@ -47,6 +47,9 @@ class User : public cSimpleModule
 
         int maxBackoffWait;
 
+        //Slot time duration in ms
+        int slotSize;
+
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);
 
@@ -66,7 +69,6 @@ class User : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
-
         //~User();
 };
 

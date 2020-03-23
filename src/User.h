@@ -22,7 +22,7 @@ using namespace omnetpp;
 
 namespace epidemicbroadcast {
 
-enum status{WAITING, SCHEDULING, LISTENING};
+enum status{WAITING, SCHEDULING, LISTENING, DONE};
 
 /**
  * Implements the Txc simple module. See the NED file for more information.
@@ -41,7 +41,7 @@ class User : public cSimpleModule
         //Collision did occur in a time slot
         bool collided                   = false;
 
-        bool messageReceived            = false;
+//        bool messageReceived            = false;
 
         cMessage* scheduledMessage;
 

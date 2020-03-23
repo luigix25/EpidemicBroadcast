@@ -21,13 +21,6 @@ Define_Module(User);
 
 void User::initialize()
 {
-    if (par("sendInitialMessage").boolValue())
-    {
-        EV<<"MASTER!!"<<endl;
-        cMessage *msg = new cMessage("tictocMsg");
-        broadcastMessage(msg);
-        this->messageReceived = true;
-    }
 
     int posX = par("posX").intValue();
     int posY = par("posY").intValue();
@@ -35,6 +28,15 @@ void User::initialize()
     this->currentStatus = WAITING;
 
     EV<<"X: "<<posX<<" Y: "<<posY<<endl;
+
+    if (par("sendInitialMessage").boolValue())
+    {
+        EV<<"MASTER!!"<<endl;
+        cMessage *msg = new cMessage("tictocMsg");
+        broadcastMessage(msg);
+//        this->messageReceived = true;
+        this->currentStatus = DONE;
+    }
 
 }
 
@@ -58,6 +60,7 @@ void User::handleMessage(cMessage *msg)
 
     //No collision, slot is changed since last time!
     this->collided = false;
+    this->receivedPackets++;
 
 
     switch(this->currentStatus){
@@ -65,7 +68,7 @@ void User::handleMessage(cMessage *msg)
 
             scheduledMessage = msg->dup();
             //TODO: sistemareProb
-            scheduleAt(currentTime+intuniform(0,2),scheduledMessage);
+            scheduleAt(currentTime+intuniform(1,4),scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
             EV<<"Status from waiting to scheduling"<<endl;
 
@@ -73,11 +76,13 @@ void User::handleMessage(cMessage *msg)
 
         case SCHEDULING:
             this->currentStatus = LISTENING;
-            EV<<"Status from waiting to scheduling"<<endl;
-
+            EV<<"Status from scheduling to listening"<<endl;
 
         case LISTENING:
-            this->receivedPackets++;
+            this->receivedPacketsInTSlots++;
+            break;
+
+        case DONE:
             break;
 
     }
@@ -108,13 +113,14 @@ void User::handleCollision(){
 
     this->collided = true;
     this->collisions++;
+    this->receivedPackets--;
 
     //Message received was not valid
 
     switch(this->currentStatus){
         case SCHEDULING:                     //time is changed, so there is no collision
 
-            this->receivedPackets = 0;
+            this->receivedPacketsInTSlots = 0;
             cancelEvent(this->scheduledMessage);
             delete this->scheduledMessage; //(?)
             EV<<"Status from SCHEDULING to WAITING"<<endl;
@@ -124,7 +130,10 @@ void User::handleCollision(){
             break;
 
         case LISTENING:
-            this->receivedPackets--;
+            this->receivedPacketsInTSlots--;
+            break;
+
+        case DONE:
             break;
     }
 
@@ -132,9 +141,12 @@ void User::handleCollision(){
 
 void User::handleSelfMessage(cMessage *msg){
 
+    //No matter if i send or not, i do not have to do anything else.
+    this->currentStatus = DONE;
+
     int m = par("m").intValue();
 
-    if(this->receivedPackets < m){
+    if(this->receivedPacketsInTSlots < m){
         broadcastMessage(msg);
         //TODO: controllare gestione memoria delete msg;
     } else {
@@ -144,7 +156,7 @@ void User::handleSelfMessage(cMessage *msg){
 }
 
 void User::finish(){
-    EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<endl;
+    EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
 }
 

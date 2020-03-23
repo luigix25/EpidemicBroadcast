@@ -15,3 +15,5 @@ m soglia di trickle				ha senso modificarlo
 
 
 
+NOTA: quando scade la schedule non succede nulla e manda nello slot successivo!
+( cioè arriva nello slot successivo ) 

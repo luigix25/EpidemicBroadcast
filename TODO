@@ -1,0 +1,17 @@
+- Studiare come salvare le statistiche da omnet
+- Come cambiare i due seed ( posizione e backoff )
+- Studiare la parte di simulazione
+
+
+
+Parametri
+
+N Numero di utenti				fissato?
+R Raggio di ricezione				immutabile
+T Numero di slot di attesa			ha senso modificarlo
+Dimensione del piano				poco senso modificarlo
+		
+m soglia di trickle				ha senso modificarlo
+
+
+

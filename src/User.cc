@@ -55,6 +55,7 @@ void User::handleMessage(cMessage *msg)
     if(currentTime == this->lastMessageTime){
         EV<<"Collisione!! "<<currentTime<<endl;
         handleCollision();
+        delete msg;
         return;
     }
 
@@ -89,6 +90,7 @@ void User::handleMessage(cMessage *msg)
 
     this->lastMessageTime = currentTime;
 
+    delete msg;
 
 }
 
@@ -96,12 +98,10 @@ void User::broadcastMessage(cMessage *msg){
 
     for (int i = 0; i < gateSize("gate$o"); i++)
     {
-        cMessage *copy = msg->dup();
-        send(copy, "gate$o", i);
+        cMessage *duplicate = msg->dup();
+        send(duplicate, "gate$o", i);
         EV<<"Sending Message"<<endl;
     }
-
-    delete msg;
 
 }
 
@@ -121,8 +121,7 @@ void User::handleCollision(){
         case SCHEDULING:                     //time is changed, so there is no collision
 
             this->receivedPacketsInTSlots = 0;
-            cancelEvent(this->scheduledMessage);
-            delete this->scheduledMessage; //(?)
+            cancelAndDelete(this->scheduledMessage);
             EV<<"Status from SCHEDULING to WAITING"<<endl;
 
             this->currentStatus = WAITING;
@@ -148,10 +147,11 @@ void User::handleSelfMessage(cMessage *msg){
 
     if(this->receivedPacketsInTSlots < m){
         broadcastMessage(msg);
-        //TODO: controllare gestione memoria delete msg;
     } else {
         EV<<"Broadcast suppressed"<<endl;
     }
+
+    delete msg;
 
 }
 

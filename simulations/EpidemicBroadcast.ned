@@ -26,9 +26,11 @@ network EpidemicBroadcast
 
 	parameters:
 		int nUsers;
-		node[0].sendInitialMessage 	= true;
-		int range 					= default(300);
-		int slotSize 				= default(1);
+		int range 							= default(300);
+
+		//Initiator
+		node[0].sendInitialMessage 			= true;
+
 		
     submodules:
     	node[nUsers]: User;

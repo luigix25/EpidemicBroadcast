@@ -28,15 +28,15 @@ void User::initialize()
     EV<<"X: "<<posX<<" Y: "<<posY<<endl;
 
     this->RNGBackoff        = par("RNGBackoff").intValue();
-    this->maxBackoffWait    = par("maxBackoffWait").intValue();
+    this->T                 = par("T").intValue();
     this->slotSize          = par("slotSize").intValue();
 
     this->currentStatus = WAITING;
 
     if (par("sendInitialMessage").boolValue())
     {
-        EV<<"MASTER!!"<<endl;
-        cMessage *msg = new cMessage("tictocMsg");
+        EV<<"Sensing First Message!!"<<endl;
+        cMessage *msg = new cMessage("HELO");
         broadcastMessage(msg);
         this->currentStatus = DONE;
         delete msg;
@@ -74,7 +74,7 @@ void User::handleMessage(cMessage *msg)
 
             scheduledMessage = msg->dup();
             //TODO: sistemareProb, /1000 brutto
-            delayTime = this->slotSize * intuniform(1, this->maxBackoffWait,this->RNGBackoff) / 1000.0;
+            delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / 1000.0;
 
             scheduleAt(currentTime + delayTime ,scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
@@ -103,11 +103,13 @@ void User::handleMessage(cMessage *msg)
 
 void User::broadcastMessage(cMessage *msg){
 
+    EV<<"Broadcasting"<<endl;
     for (int i = 0; i < gateSize("gate$o"); i++)
     {
         cMessage *duplicate = msg->dup();
         //TODO: diviso 1000 è brutto
-        sendDelayed(duplicate,this->slotSize/1000.0, "gate$o", i);
+        //sendDelayed(duplicate,this->slotSize/1000.0, "gate$o", i);
+        send(duplicate, "gate$o", i);
         EV<<"Sending Message"<<endl;
     }
 

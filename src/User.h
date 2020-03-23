@@ -45,10 +45,10 @@ class User : public cSimpleModule
         //RNG to be used for Backoff computation
         int RNGBackoff;
 
-        int maxBackoffWait;
-
         //Slot time duration in ms
         int slotSize;
+
+        int T;
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);

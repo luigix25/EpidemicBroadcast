@@ -33,10 +33,8 @@ simple User
     	
     	int XLimit							= default(600);
     	int YLimit							= default(600);
-        
-    	int maxBackoffWait					= default(4);
-    	
-		int slotSize @unit(milliseconds)	= default(100ms);
+            	
+		int slotSize @unit(milliseconds)	= default(1000ms);
 
 
 		int posX = default(intuniform (0, XLimit, RNGPosition));

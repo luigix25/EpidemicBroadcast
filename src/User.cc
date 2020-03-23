@@ -29,6 +29,7 @@ void User::initialize()
 
     this->RNGBackoff        = par("RNGBackoff").intValue();
     this->T                 = par("T").intValue();
+    this>m                  = par("m").intValue();
     this->slotSize          = par("slotSize").intValue();
 
     this->currentStatus = WAITING;
@@ -153,9 +154,7 @@ void User::handleSelfMessage(cMessage *msg){
     //No matter if i send or not, i do not have to do anything else.
     this->currentStatus = DONE;
 
-    int m = par("m").intValue();
-
-    if(this->receivedPacketsInTSlots < m){
+    if(this->receivedPacketsInTSlots < this->m){
         broadcastMessage(msg);
     } else {
         EV<<"Broadcast suppressed"<<endl;

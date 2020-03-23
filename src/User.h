@@ -49,6 +49,7 @@ class User : public cSimpleModule
         int slotSize;
 
         int T;
+        int m;
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);

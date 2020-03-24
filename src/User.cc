@@ -29,7 +29,7 @@ void User::initialize()
 
     this->RNGBackoff        = par("RNGBackoff").intValue();
     this->T                 = par("T").intValue();
-    this>m                  = par("m").intValue();
+    this->m                  = par("m").intValue();
     this->slotSize          = par("slotSize").intValue();
 
     this->currentStatus = WAITING;

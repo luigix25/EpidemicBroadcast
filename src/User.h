@@ -51,6 +51,10 @@ class User : public cSimpleModule
         int T;
         int m;
 
+        //Signals Simulation
+
+        simsignal_t packetCountSignal;
+
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);
 

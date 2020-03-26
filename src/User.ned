@@ -23,7 +23,7 @@ package epidemicbroadcast;
 simple User
 {
     parameters:
-        bool sendInitialMessage = default(false);
+        bool sendInitialMessage 			= default(false);
         
         int m								= default(3);
         int T								= default(5);
@@ -35,11 +35,13 @@ simple User
     	int YLimit							= default(600);
             	
 		int slotSize @unit(milliseconds)	= default(1000ms);
-
-
+				
 		int posX = default(intuniform (0, XLimit, RNGPosition));
 		int posY = default(intuniform (0, YLimit, RNGPosition));    		
 		@display("p=$posX,$posY");    
+		
+		@signal[packets](source="packets";type=int);
+		@statistic[packets](title="packets";record=mean,max,count);		
 		    
     gates:
         inout 	gate[];

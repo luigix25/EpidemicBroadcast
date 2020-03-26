@@ -43,6 +43,8 @@ void User::initialize()
         delete msg;
     }
 
+    packetCountSignal = registerSignal("packets");
+
 }
 
 void User::handleMessage(cMessage *msg)
@@ -67,6 +69,7 @@ void User::handleMessage(cMessage *msg)
     //No collision, slot is changed since last time!
     this->collided = false;
     this->receivedPackets++;
+    emit(packetCountSignal,this->receivedPackets);
 
     simtime_t delayTime;
 
@@ -113,6 +116,7 @@ void User::broadcastMessage(cMessage *msg){
         send(duplicate, "gate$o", i);
         EV<<"Sending Message"<<endl;
     }
+
 
 }
 

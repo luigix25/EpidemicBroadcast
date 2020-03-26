@@ -30,7 +30,7 @@ network EpidemicBroadcast
 
 		//Initiator
 		node[0].sendInitialMessage 			= true;
-
+		
 		
     submodules:
     	node[nUsers]: User;
@@ -38,9 +38,15 @@ network EpidemicBroadcast
     connections:
         for i=0..sizeof(node)-2, for j=(i+1)..sizeof(node)-1 {    		
 			//node[i].gate++ <--> {delay = 1000ms;} <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
+						
+			//if node[i].connected == true {
+			//	node[j].connected = true;
+			//}
+			
 			node[i].gate++ <--> node[j].gate++ if pow(node[i].posX-node[j].posX, 2)+pow(node[i].posY-node[j].posY, 2) < range*range;
     	
-    	}   	
+    	}
+    	
     	
 
 }

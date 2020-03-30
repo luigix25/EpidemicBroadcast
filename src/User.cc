@@ -171,6 +171,8 @@ void User::handleSelfMessage(cMessage *msg){
 void User::finish(){
     EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
+    recordScalar("#SimTime[ms]", simTime()*1000+this->slotSize);
+
 }
 
 

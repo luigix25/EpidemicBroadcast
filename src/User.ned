@@ -41,8 +41,8 @@ simple User
 		@display("p=$posX,$posY");    
 		
 		@signal[packets](source="packets";type=int);
-		@statistic[packets](title="packets";record=mean,max,count);		
-		    
+		@statistic[packets](title="packets";record=mean,max,count,sum);	
+				    
     gates:
         inout 	gate[];
 }

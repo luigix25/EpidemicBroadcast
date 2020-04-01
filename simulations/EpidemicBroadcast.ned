@@ -26,14 +26,15 @@ network EpidemicBroadcast
 
 	parameters:
 		int nUsers;
-		int range 							= default(300);
 
 		//Initiator
 		node[0].sendInitialMessage 			= true;
 		
 		
     submodules:
-    	node[nUsers]: User;
+    	node[nUsers]: User{
+    		nNeighbours = nUsers;
+    	}
                	
     	
 

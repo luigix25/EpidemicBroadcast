@@ -27,12 +27,15 @@ simple User
         
         int m								= default(3);
         int T								= default(5);
+        int R								= default(300);
         
 		int RNGPosition						= default(1);
     	int RNGBackoff						= default(2);
     	
     	int XLimit							= default(600);
     	int YLimit							= default(600);
+            	
+    	int nNeighbours;
             	
 		int slotSize @unit(milliseconds)	= default(1000ms);
 				
@@ -45,7 +48,7 @@ simple User
 				    
     gates:
     	input radioIn @directIn;
-    	output radioOut @directIn;
+    	//output radioOut @directIn;
     
 }
 

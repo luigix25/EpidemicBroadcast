@@ -22,17 +22,40 @@ Define_Module(User);
 void User::initialize()
 {
 
-    int posX = par("posX").intValue();
-    int posY = par("posY").intValue();
+    EV<<numInitStages()<<endl;
+
+    gate("radioIn")->setDeliverOnReceptionStart(true);
+
+
+    this->posX = par("posX").intValue();
+    this->posY = par("posY").intValue();
+
+    this->nNeighbours = par("nNeighbours").intValue();
+
 
     EV<<"X: "<<posX<<" Y: "<<posY<<endl;
 
     this->RNGBackoff        = par("RNGBackoff").intValue();
     this->T                 = par("T").intValue();
-    this->m                  = par("m").intValue();
+    this->m                 = par("m").intValue();
     this->slotSize          = par("slotSize").intValue();
 
+    this->R                 = par("R").intValue();
+
+
     this->currentStatus = WAITING;
+
+    packetCountSignal = registerSignal("packets");
+
+
+    neighbours = new User*[this->nNeighbours];
+
+    for(int i=0;i<this->nNeighbours;i++){
+
+        neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
+        EV<<neighbours[i]->posX<<endl;
+
+    }
 
     if (par("sendInitialMessage").boolValue())
     {
@@ -42,8 +65,6 @@ void User::initialize()
         this->currentStatus = DONE;
         delete msg;
     }
-
-    packetCountSignal = registerSignal("packets");
 
 }
 
@@ -108,12 +129,13 @@ void User::handleMessage(cMessage *msg)
 void User::broadcastMessage(cMessage *msg){
 
     EV<<"Broadcasting"<<endl;
-    for (int i = 0; i < gateSize("gate$o"); i++)
+    for (int i = 0; i < this->nNeighbours; i++)
     {
+        //No Self Msg
+        if(this->neighbours[i] == this || this->isInTxRadius(this->neighbours[i]))
+            continue;
         cMessage *duplicate = msg->dup();
-        //TODO: diviso 1000 è brutto
-        //sendDelayed(duplicate,this->slotSize/1000.0, "gate$o", i);
-        send(duplicate, "gate$o", i);
+        sendDirect(duplicate,this->neighbours[i]->gate("radioIn"));
         EV<<"Sending Message"<<endl;
     }
 
@@ -175,6 +197,11 @@ void User::finish(){
 
 }
 
+bool User::isInTxRadius(User *user){
+
+    return pow(this->posX - user->posX,2) + pow(this->posY - user->posY,2) <= pow(this->R,2);
+
+}
 
 
 }; // namespace

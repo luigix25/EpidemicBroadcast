@@ -50,6 +50,14 @@ class User : public cSimpleModule
 
         int T;
         int m;
+        int R;
+
+        int posX;
+        int posY;
+
+        //Neighbours
+        User ** neighbours;
+        int nNeighbours;
 
         //Signals Simulation
 
@@ -57,6 +65,10 @@ class User : public cSimpleModule
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);
+
+
+        bool isInTxRadius(User *);
+
 
         void handleCollision();
         void handleSelfMessage(cMessage *msg);

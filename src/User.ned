@@ -44,6 +44,8 @@ simple User
 		@statistic[packets](title="packets";record=mean,max,count,sum);	
 				    
     gates:
-        inout 	gate[];
+    	input radioIn @directIn;
+    	output radioOut @directIn;
+    
 }
 

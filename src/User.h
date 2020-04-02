@@ -83,9 +83,11 @@ class User : public cSimpleModule
         //Number of packets received globally without collisions
         unsigned short receivedPackets          = 0;
 
-        virtual void initialize();
+        virtual void initialize(int);
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
+        virtual int numInitStages() const { return 2; }
+
         //~User();
 };
 

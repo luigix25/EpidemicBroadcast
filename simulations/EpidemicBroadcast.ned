@@ -16,6 +16,7 @@
 package epidemicbroadcast.simulations;
 
 import epidemicbroadcast.User;
+import epidemicbroadcast.Oracle;
 
 //
 // Two instances (tic and toc) of Txc connected.
@@ -35,7 +36,8 @@ network EpidemicBroadcast
     	node[nUsers]: User{
     		nNeighbours = nUsers;
     	}
-               	
+		
+		oracle: Oracle;
     	
 
 }

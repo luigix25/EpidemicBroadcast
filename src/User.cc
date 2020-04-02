@@ -19,51 +19,61 @@ namespace epidemicbroadcast {
 
 Define_Module(User);
 
-void User::initialize()
+void User::initialize(int stage)
 {
 
-    EV<<numInitStages()<<endl;
+    if(stage == 0){
 
-    gate("radioIn")->setDeliverOnReceptionStart(true);
+        EV<<numInitStages()<<endl;
 
+        gate("radioIn")->setDeliverOnReceptionStart(true);
 
-    this->posX = par("posX").intValue();
-    this->posY = par("posY").intValue();
+        this->posX = par("posX").intValue();
+        this->posY = par("posY").intValue();
 
-    this->nNeighbours = par("nNeighbours").intValue();
-
-
-    EV<<"X: "<<posX<<" Y: "<<posY<<endl;
-
-    this->RNGBackoff        = par("RNGBackoff").intValue();
-    this->T                 = par("T").intValue();
-    this->m                 = par("m").intValue();
-    this->slotSize          = par("slotSize").intValue();
-
-    this->R                 = par("R").intValue();
+        this->nNeighbours = par("nNeighbours").intValue();
 
 
-    this->currentStatus = WAITING;
+        EV<<"X: "<<posX<<" Y: "<<posY<<endl;
 
-    packetCountSignal = registerSignal("packets");
+        this->RNGBackoff        = par("RNGBackoff").intValue();
+        this->T                 = par("T").intValue();
+        this->m                 = par("m").intValue();
+        this->slotSize          = par("slotSize").intValue();
+
+        this->R                 = par("R").intValue();
 
 
-    neighbours = new User*[this->nNeighbours];
+        this->currentStatus = WAITING;
 
-    for(int i=0;i<this->nNeighbours;i++){
+        packetCountSignal = registerSignal("packets");
 
-        neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
-        EV<<neighbours[i]->posX<<endl;
+        return;
 
-    }
+    } else if(stage == 1){
 
-    if (par("sendInitialMessage").boolValue())
-    {
-        EV<<"Sensing First Message!!"<<endl;
-        cMessage *msg = new cMessage("HELO");
-        broadcastMessage(msg);
-        this->currentStatus = DONE;
-        delete msg;
+        //Stage 1
+
+        neighbours = new User*[this->nNeighbours];
+
+        for(int i=0;i<this->nNeighbours;i++){
+
+            neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
+            EV<<neighbours[i]->posX<<endl;
+
+        }
+
+        //Redrop goes here!
+
+        if (par("sendInitialMessage").boolValue() && stage == 1)
+        {
+            EV<<"Sensing First Message!!"<<endl;
+            cMessage *msg = new cMessage("HELO");
+            broadcastMessage(msg);
+            this->currentStatus = DONE;
+            delete msg;
+        }
+
     }
 
 }

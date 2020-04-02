@@ -29,6 +29,13 @@ enum status{WAITING, SCHEDULING, LISTENING, DONE};
  */
 class User : public cSimpleModule
 {
+
+    public:
+        int posX;
+        int posY;
+
+        bool sendInitialMessage = false;
+
     private:
 
         //Time when last message is received
@@ -51,9 +58,6 @@ class User : public cSimpleModule
         int T;
         int m;
         int R;
-
-        int posX;
-        int posY;
 
         //Neighbours
         User ** neighbours;

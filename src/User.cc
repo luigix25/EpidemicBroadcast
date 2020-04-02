@@ -65,7 +65,7 @@ void User::initialize(int stage)
 
         //Redrop goes here!
 
-        if (par("sendInitialMessage").boolValue() && stage == 1)
+        if (this->sendInitialMessage && stage == 1)
         {
             EV<<"Sensing First Message!!"<<endl;
             cMessage *msg = new cMessage("HELO");
@@ -142,7 +142,7 @@ void User::broadcastMessage(cMessage *msg){
     for (int i = 0; i < this->nNeighbours; i++)
     {
         //No Self Msg
-        if(this->neighbours[i] == this || this->isInTxRadius(this->neighbours[i]))
+        if(this->neighbours[i] == this || !this->isInTxRadius(this->neighbours[i]))
             continue;
         cMessage *duplicate = msg->dup();
         sendDirect(duplicate,this->neighbours[i]->gate("radioIn"));
@@ -209,7 +209,7 @@ void User::finish(){
 
 bool User::isInTxRadius(User *user){
 
-    return pow(this->posX - user->posX,2) + pow(this->posY - user->posY,2) <= pow(this->R,2);
+    return (pow(this->posX - user->posX,2) + pow(this->posY - user->posY,2) <= pow(this->R,2));
 
 }
 

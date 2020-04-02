@@ -23,11 +23,13 @@ package epidemicbroadcast;
 simple User
 {
     parameters:
-        bool sendInitialMessage 			= default(false);
+        //bool sendInitialMessage 			= default(false);
         
         int m								= default(3);
         int T								= default(5);
         int R								= default(300);
+        
+        bool redrop							= default(false);
         
 		int RNGPosition						= default(1);
     	int RNGBackoff						= default(2);
@@ -41,14 +43,13 @@ simple User
 				
 		int posX = default(intuniform (0, XLimit, RNGPosition));
 		int posY = default(intuniform (0, YLimit, RNGPosition));    		
-		@display("p=$posX,$posY");    
+		@display("p=$posX,$posY;r=$R");    
 		
 		@signal[packets](source="packets";type=int);
 		@statistic[packets](title="packets";record=mean,max,count,sum);	
 				    
     gates:
     	input radioIn @directIn;
-    	//output radioOut @directIn;
     
 }
 

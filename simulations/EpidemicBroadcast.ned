@@ -29,7 +29,7 @@ network EpidemicBroadcast
 		int nUsers;
 
 		//Initiator
-		node[0].sendInitialMessage 			= true;
+		//node[0].sendInitialMessage 			= true;
 		
 		
     submodules:
@@ -37,7 +37,9 @@ network EpidemicBroadcast
     		nNeighbours = nUsers;
     	}
 		
-		oracle: Oracle;
+		oracle: Oracle{
+			nNeighbours = nUsers;
+		}
     	
 
 }

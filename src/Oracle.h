@@ -15,7 +15,10 @@
 
 #include <omnetpp.h>
 #include "User.h"
+#include <unordered_set>
+#include <queue>
 using namespace omnetpp;
+using namespace std;
 
 #ifndef ORACLE_H_
 #define ORACLE_H_
@@ -28,8 +31,9 @@ class Oracle : public cSimpleModule{
     private:
         User** neighbours;
         int nNeighbours;
-
+        void checkNeighbours(User*, queue<User*> &,unordered_set<User*>&);
         void marking(User*);
+        void redropUser(User*);
 
 
     public:

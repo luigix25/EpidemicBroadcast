@@ -24,8 +24,6 @@ void User::initialize(int stage)
 
     if(stage == 0){
 
-        EV<<numInitStages()<<endl;
-
         gate("radioIn")->setDeliverOnReceptionStart(true);
 
         this->posX = par("posX").intValue();
@@ -59,7 +57,7 @@ void User::initialize(int stage)
         for(int i=0;i<this->nNeighbours;i++){
 
             neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
-            EV<<neighbours[i]->posX<<endl;
+            EV<<neighbours[i]->posX<<" : "<<neighbours[i]->posY<<endl;
 
         }
 

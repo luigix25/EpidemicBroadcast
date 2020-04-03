@@ -28,13 +28,13 @@ namespace epidemicbroadcast {
         for(int i=0;i<this->nNeighbours;i++){
 
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
-            EV<<this->neighbours[i]->posX<<endl;
+            //EV<<this->neighbours[i]->posX<<endl;
 
         }
 
         this->neighbours[0]->sendInitialMessage = true;
 
-        marking(this->neighbours[0]);
+        marking();
 
     }
 
@@ -42,49 +42,70 @@ namespace epidemicbroadcast {
 
     }
 
-    void Oracle::marking(User *user){
+    void Oracle::marking(){
 
         //nodes not yet visited but in the graph
-        queue<User*> q;
-        q.push(user);
+        /*queue<User*> q;
+        q.push(user);*/
         unordered_set<User*> checked;
         unordered_set<User*> unchecked;
+        queue<User*> q;
+        int count = 0;
+        int count2 = 0;
 
         for(int i = 0; i < this->nNeighbours; i++)
             unchecked.insert(this->neighbours[i]);
 
-        while(!q.empty()){
-            User* tmp = q.front();
-            q.pop();
-            checked.insert(tmp);
-            unchecked.erase(tmp);
-
-            checkNeighbours(tmp,q,unchecked);
-
-        }
-
         while(unchecked.size() != 0){
-            User* tmp = *(unchecked.begin());
-            unchecked.erase(tmp);
-            redropUser(tmp);
-            //unchecked.clear();
-        }
+            q.push((*unchecked.begin()));
+
+            while(!q.empty()){
+                User* tmp = q.front();
+                q.pop();
+                checked.insert(tmp);
+                unchecked.erase(tmp);
+
+                checkNeighbours(tmp,q,unchecked);
+
+            }
+
+
+            if(unchecked.size() != 0){
+                count++;
+                User* tmp = *(unchecked.begin());
+                do{
+                    count2++;
+                    redropUser(tmp);
+                }while(!checkNewConnections(tmp,checked));
+
+
+            }
+
+            /*while(unchecked.size() != 0){
+                User* tmp = *(unchecked.begin());
+                unchecked.erase(tmp);
+                redropUser(tmp);
+            }*/
             //checkNewConnections(tmp,checked,unchecked);
-
-
-
-
-
-
-        EV<<"CHECKED:"<<endl;
-        for(auto itr = checked.begin(); itr != checked.end(); itr++){
-            EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
         }
-        EV<<"UNCHECKED:"<<endl;
+
+
+
+
+
+        EV<<"CHECKED:"<<checked.size() << endl;
+        /*for(auto itr = checked.begin(); itr != checked.end(); itr++){
+            EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
+        }*/
+        EV<<"UNCHECKED:"<<unchecked.size()<<endl;
 
         for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
             EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
         }
+
+        EV << "Numero Redrop: " << count << endl;
+        EV << "Numero Redrop totali: " << count2 << endl;
+
 
 
     }
@@ -108,8 +129,8 @@ namespace epidemicbroadcast {
     }
 
     void Oracle::redropUser(User* user){
-        user->posX = intuniform(0,600);
-        user->posY = intuniform(0,600);
+        user->posX = intuniform(0,6000);
+        user->posY = intuniform(0,6000);
         cDisplayString& dispStr = user->getDisplayString();
         dispStr.setTagArg("p", 0, user->posX);
         dispStr.setTagArg("p", 1, user->posY);
@@ -117,7 +138,17 @@ namespace epidemicbroadcast {
 
     }
 
-    /*void Oracle::checkNewConnections(User* tmp,unordered_set<User*>& checked,unordered_set<User*>& unchecked){
-        for(auto itr)
-    }*/
+    bool Oracle::checkNewConnections(User* tmp,unordered_set<User*>& checked){
+        for(auto itr = checked.begin(); itr != checked.end(); itr++){
+            if(isInTxRadius(tmp,*itr))
+                return true;
+        }
+        return false;
+    }
+
+    bool Oracle::isInTxRadius(User *a, User *b){
+
+        return (pow(a->posX - b->posX,2) + pow(a->posY - b->posY,2) <= pow(a->R,2));
+
+    }
 } /* namespace epidemicbroadcast */

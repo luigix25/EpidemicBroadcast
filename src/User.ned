@@ -27,15 +27,15 @@ simple User
         
         int m								= default(3);
         int T								= default(5);
-        int R								= default(300);
+        int R								= default(2000);
         
         bool redrop							= default(false);
         
 		int RNGPosition						= default(1);
     	int RNGBackoff						= default(2);
     	
-    	int XLimit							= default(600);
-    	int YLimit							= default(600);
+    	int XLimit							= default(6000);
+    	int YLimit							= default(6000);
             	
     	int nNeighbours;
             	

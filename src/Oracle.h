@@ -32,8 +32,10 @@ class Oracle : public cSimpleModule{
         User** neighbours;
         int nNeighbours;
         void checkNeighbours(User*, queue<User*> &,unordered_set<User*>&);
-        void marking(User*);
+        void marking();
         void redropUser(User*);
+        bool isInTxRadius(User *, User *);
+        bool checkNewConnections(User*,unordered_set<User*>&);
 
 
     public:

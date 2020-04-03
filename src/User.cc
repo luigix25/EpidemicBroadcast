@@ -32,7 +32,7 @@ void User::initialize(int stage)
         this->nNeighbours = par("nNeighbours").intValue();
 
 
-        EV<<"X: "<<posX<<" Y: "<<posY<<endl;
+        //EV<<"X: "<<posX<<" Y: "<<posY<<endl;
 
         this->RNGBackoff        = par("RNGBackoff").intValue();
         this->T                 = par("T").intValue();
@@ -57,7 +57,6 @@ void User::initialize(int stage)
         for(int i=0;i<this->nNeighbours;i++){
 
             neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
-            EV<<neighbours[i]->posX<<" : "<<neighbours[i]->posY<<endl;
 
         }
 

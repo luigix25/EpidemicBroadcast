@@ -21,20 +21,22 @@ namespace epidemicbroadcast {
 
     void Oracle::initialize(){
 
-        this->nNeighbours = par("nNeighbours").intValue();
+        this->nNeighbours   = par("nNeighbours").intValue();
+        this->XLimit        = par("nNeighbours").intValue();
+        this->YLimit        = par("nNeighbours").intValue();
+        this->R             = par("R").intValue();
+        this->redrop        = par("redrop").boolValue();
 
         this->neighbours = new User*[this->nNeighbours];
 
         for(int i=0;i<this->nNeighbours;i++){
-
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
-            //EV<<this->neighbours[i]->posX<<endl;
-
         }
 
         this->neighbours[0]->sendInitialMessage = true;
 
-        marking();
+        if(redrop)
+            marking();
 
     }
 
@@ -90,9 +92,6 @@ namespace epidemicbroadcast {
         }
 
 
-
-
-
         EV<<"CHECKED:"<<checked.size() << endl;
         /*for(auto itr = checked.begin(); itr != checked.end(); itr++){
             EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
@@ -106,8 +105,6 @@ namespace epidemicbroadcast {
         EV << "Numero Redrop: " << count << endl;
         EV << "Numero Redrop totali: " << count2 << endl;
 
-
-
     }
 
     void Oracle::checkNeighbours(User* user, queue<User*> &q,unordered_set<User*>& unchecked){
@@ -120,7 +117,7 @@ namespace epidemicbroadcast {
             otherPosX = (*itr)->posX;
             otherPosY = (*itr)->posY;
 
-           if(pow(myPosX - otherPosX,2) + pow(myPosY - otherPosY,2) <= pow(user->R,2)){
+           if(pow(myPosX - otherPosX,2) + pow(myPosY - otherPosY,2) <= pow(this->R,2)){
                q.push(*itr);
 
            }
@@ -129,8 +126,8 @@ namespace epidemicbroadcast {
     }
 
     void Oracle::redropUser(User* user){
-        user->posX = intuniform(0,6000);
-        user->posY = intuniform(0,6000);
+        user->posX = intuniform(0,this->XLimit);
+        user->posY = intuniform(0,this->YLimit);
         cDisplayString& dispStr = user->getDisplayString();
         dispStr.setTagArg("p", 0, user->posX);
         dispStr.setTagArg("p", 1, user->posY);
@@ -148,7 +145,8 @@ namespace epidemicbroadcast {
 
     bool Oracle::isInTxRadius(User *a, User *b){
 
-        return (pow(a->posX - b->posX,2) + pow(a->posY - b->posY,2) <= pow(a->R,2));
+        //Radius size in unique
+        return (pow(a->posX - b->posX,2) + pow(a->posY - b->posY,2) <= pow(this->R,2));
 
     }
 } /* namespace epidemicbroadcast */

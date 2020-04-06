@@ -48,6 +48,8 @@ void User::initialize(int stage)
 
         return;
 
+
+    //Redrop occurs between stage 0 and 1 ( if any )
     } else if(stage == 1){
 
         //Stage 1
@@ -60,9 +62,7 @@ void User::initialize(int stage)
 
         }
 
-        //Redrop goes here!
-
-        if (this->sendInitialMessage && stage == 1)
+        if (this->sendInitialMessage)
         {
             EV<<"Sensing First Message!!"<<endl;
             cMessage *msg = new cMessage("HELO");

@@ -33,7 +33,6 @@ class User : public cSimpleModule
     public:
         int posX;
         int posY;
-        int R;
 
 
         bool sendInitialMessage = false;
@@ -59,6 +58,7 @@ class User : public cSimpleModule
 
         int T;
         int m;
+        int R;
 
         //Neighbours
         User ** neighbours;

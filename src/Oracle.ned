@@ -19,6 +19,12 @@ simple Oracle{
 
     parameters:
 		int nNeighbours;
+		int R;
+		int XLimit;
+		int YLimit;
+		
+		bool redrop = default(false);
+		
 		@display("");    
 	
 

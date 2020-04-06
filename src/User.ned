@@ -25,17 +25,15 @@ simple User
     parameters:
         //bool sendInitialMessage 			= default(false);
         
-        int m								= default(3);
-        int T								= default(5);
-        int R								= default(2000);
-        
-        bool redrop							= default(false);
-        
+        int m;
+        int T;
+        int R;
+                
 		int RNGPosition						= default(1);
     	int RNGBackoff						= default(2);
     	
-    	int XLimit							= default(6000);
-    	int YLimit							= default(6000);
+    	int XLimit;					
+    	int YLimit;						
             	
     	int nNeighbours;
             	

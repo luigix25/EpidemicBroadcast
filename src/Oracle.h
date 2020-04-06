@@ -31,6 +31,11 @@ class Oracle : public cSimpleModule{
     private:
         User** neighbours;
         int nNeighbours;
+
+        int R;
+        int XLimit, YLimit;
+        bool redrop;
+
         void checkNeighbours(User*, queue<User*> &,unordered_set<User*>&);
         void marking();
         void redropUser(User*);

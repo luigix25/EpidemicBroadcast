@@ -26,6 +26,7 @@ namespace epidemicbroadcast {
         this->YLimit        = par("nNeighbours").intValue();
         this->R             = par("R").intValue();
         this->redrop        = par("redrop").boolValue();
+        this->RNGPosition   = par("RNGPosition").intValue();
 
         this->neighbours = new User*[this->nNeighbours];
 
@@ -126,8 +127,8 @@ namespace epidemicbroadcast {
     }
 
     void Oracle::redropUser(User* user){
-        user->posX = intuniform(0,this->XLimit);
-        user->posY = intuniform(0,this->YLimit);
+        user->posX = intuniform(0,this->XLimit,this->RNGPosition);
+        user->posY = intuniform(0,this->YLimit,this->RNGPosition);
         cDisplayString& dispStr = user->getDisplayString();
         dispStr.setTagArg("p", 0, user->posX);
         dispStr.setTagArg("p", 1, user->posY);

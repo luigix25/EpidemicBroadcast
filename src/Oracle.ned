@@ -25,6 +25,9 @@ simple Oracle{
 		
 		bool redrop = default(false);
 		
+		int RNGPosition						= default(1);
+		
+		
 		@display("");    
 	
 

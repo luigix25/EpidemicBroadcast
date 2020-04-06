@@ -19,8 +19,6 @@ import epidemicbroadcast.User;
 import epidemicbroadcast.Oracle;
 
 //
-// Two instances (tic and toc) of Txc connected.
-//
 
 network EpidemicBroadcast
 {

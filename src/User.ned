@@ -43,8 +43,8 @@ simple User
 		int posY = default(intuniform (0, YLimit, RNGPosition));    		
 		@display("p=$posX,$posY;r=$R");    
 		
-		@signal[packets](source="packets";type=int);
-		@statistic[packets](title="packets";record=mean,max,count,sum);	
+		//@signal[packets](source="packets";type=int);
+		//@statistic[packets](title="packets";record=mean,max,count,sum);	
 				    
     gates:
     	input radioIn @directIn;

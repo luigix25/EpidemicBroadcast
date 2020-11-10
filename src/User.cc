@@ -44,7 +44,7 @@ void User::initialize(int stage)
 
         this->currentStatus = WAITING;
 
-        packetCountSignal = registerSignal("packets");
+        //packetCountSignal = registerSignal("packets");
 
         return;
 
@@ -77,6 +77,13 @@ void User::initialize(int stage)
 
 void User::handleMessage(cMessage *msg)
 {
+
+    // When status is done antenna is switched off
+    if(this->currentStatus == DONE){
+        delete msg;
+        return;
+    }
+
     EV << "Received a frame at "<< simTime() << endl;
 
     if(msg->isSelfMessage()){
@@ -97,7 +104,7 @@ void User::handleMessage(cMessage *msg)
     //No collision, slot is changed since last time!
     this->collided = false;
     this->receivedPackets++;
-    emit(packetCountSignal,this->receivedPackets);
+    //emit(packetCountSignal,this->receivedPackets);
 
     simtime_t delayTime;
 
@@ -105,8 +112,13 @@ void User::handleMessage(cMessage *msg)
         case WAITING:
 
             scheduledMessage = msg->dup();
-            //TODO: sistemareProb, /1000 brutto
-            delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / 1000.0;
+            //TODO: sistemareProb
+
+            //ScheduleAt wants seconds and slotSize is in milliseconds
+            delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / ONE_SECOND;
+
+            EV<<"DELAY TIME: ";
+            EV<<delayTime<<endl;
 
             scheduleAt(currentTime + delayTime ,scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
@@ -121,10 +133,11 @@ void User::handleMessage(cMessage *msg)
         case LISTENING:
             this->receivedPacketsInTSlots++;
             break;
-
+/*
+//TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
         case DONE:
             break;
-
+*/
     }
 
     this->lastMessageTime = currentTime;
@@ -151,8 +164,8 @@ void User::broadcastMessage(cMessage *msg){
 
 void User::handleCollision(){
 
-    //Collision Already Handled
-    if(this->collided)
+    //Collision Already Handled or antenna is switched off
+    if(this->collided || this->currentStatus == DONE)
         return;
 
     this->collided = true;
@@ -175,9 +188,10 @@ void User::handleCollision(){
         case LISTENING:
             this->receivedPacketsInTSlots--;
             break;
-
+/*
+//TODO: ha senso gestire collisioni in DONE? No, infatti vengono eliminate. [è solo un placeholder]
         case DONE:
-            break;
+            break;*/
     }
 
 }
@@ -200,7 +214,13 @@ void User::handleSelfMessage(cMessage *msg){
 void User::finish(){
     EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
-    recordScalar("#SimTime[ms]", simTime()*1000+this->slotSize);
+    //SimTime recorded just once by the Initiator, for simplicity
+    if (this->sendInitialMessage)
+        recordScalar("#SimTime[ms]", simTime() * ONE_SECOND + this->slotSize);
+
+    recordScalar("#PacketCount", this->receivedPackets);
+
+    //emit(packetCountSignal,this->receivedPackets);
 
 }
 

@@ -22,6 +22,8 @@ using namespace omnetpp;
 
 namespace epidemicbroadcast {
 
+#define ONE_SECOND 1000.0
+
 enum status{WAITING, SCHEDULING, LISTENING, DONE};
 
 /**

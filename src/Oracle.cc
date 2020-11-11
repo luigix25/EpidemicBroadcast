@@ -42,7 +42,7 @@ namespace epidemicbroadcast {
     }
 
     void Oracle::finish(){
-
+        //recordScalar("#PacketCount", this->receivedPackets);
     }
 
     void Oracle::marking(){
@@ -55,6 +55,7 @@ namespace epidemicbroadcast {
         queue<User*> q;
         int count = 0;
         int count2 = 0;
+
 
         for(int i = 0; i < this->nNeighbours; i++)
             unchecked.insert(this->neighbours[i]);

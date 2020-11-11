@@ -219,6 +219,15 @@ void User::finish(){
         recordScalar("#SimTime[ms]", simTime() * ONE_SECOND + this->slotSize);
 
     recordScalar("#PacketCount", this->receivedPackets);
+    recordScalar("#Collision", this->collisions);
+    recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
+
+    if( this->receivedPacketsInTSlots >= this->m || this->sendInitialMessage){
+        recordScalar("#SendMessage", 1);
+    } else{
+        recordScalar("#SendMessage", 0);
+    }
+
 
     //emit(packetCountSignal,this->receivedPackets);
 

@@ -39,6 +39,11 @@ class Oracle : public cSimpleModule{
         //RNG to be used for Backoff computation
         int RNGPosition;
 
+        // For stats
+        int totalNumberOfRedrops;
+        int unlinkedNodes;              /* Before Redrop if any */
+
+
         void checkNeighbours(User*, queue<User*> &,unordered_set<User*>&);
         void marking();
         void redropUser(User*);

@@ -29,6 +29,7 @@ namespace epidemicbroadcast {
         this->RNGPosition   = par("RNGPosition").intValue();
 
         this->neighbours = new User*[this->nNeighbours];
+        this->totalNumberOfRedrops = 0;
 
         for(int i=0;i<this->nNeighbours;i++){
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
@@ -36,8 +37,8 @@ namespace epidemicbroadcast {
 
         this->neighbours[0]->sendInitialMessage = true;
 
-        if(redrop)
-            marking();
+        //if(redrop)
+        marking();
 
     }
 
@@ -53,9 +54,10 @@ namespace epidemicbroadcast {
         unordered_set<User*> checked;
         unordered_set<User*> unchecked;
         queue<User*> q;
-        int count = 0;
-        int count2 = 0;
 
+        /*int count = 0;
+        int count2 = 0;
+         */
 
         /* All the nodes are uncheked */
         for(int i = 0; i < this->nNeighbours; i++)
@@ -77,12 +79,19 @@ namespace epidemicbroadcast {
 
             }
 
+            this->unlinkedNodes = unchecked.size();
+            EV<<this->unlinkedNodes<<endl;
+
+            if(!this->redrop){
+                return;
+            }
+
             /* Redrop of the unlinked nodes from the "main" cluster ONE at a time*/
             if(unchecked.size() != 0){
-                count++;
+                //count++;
                 User* tmp = *(unchecked.begin());
                 do{
-                    count2++;
+                    this->totalNumberOfRedrops++;
                     redropUser(tmp);
                 }while(!checkNewConnections(tmp,checked)); /* Check that is connected to AT LEAST one connected node */
 
@@ -104,12 +113,12 @@ namespace epidemicbroadcast {
         }*/
         EV<<"UNCHECKED:"<<unchecked.size()<<endl;
 
-        for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
+        /*for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
             EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
         }
 
         EV << "Numero Redrop: " << count << endl;
-        EV << "Numero Redrop totali: " << count2 << endl;
+        EV << "Numero Redrop totali: " << count2 << endl;*/
 
     }
 

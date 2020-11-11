@@ -57,30 +57,34 @@ namespace epidemicbroadcast {
         int count2 = 0;
 
 
+        /* All the nodes are uncheked */
         for(int i = 0; i < this->nNeighbours; i++)
             unchecked.insert(this->neighbours[i]);
 
         while(unchecked.size() != 0){
+            /* First element of the unchecked */
             q.push((*unchecked.begin()));
 
+
+            /* In the this while starting from q [that initially is the first element] i create a queue with all the connected nodes */
             while(!q.empty()){
                 User* tmp = q.front();
-                q.pop();
+                q.pop();                    /* pop is a void function*/
                 checked.insert(tmp);
                 unchecked.erase(tmp);
 
-                checkNeighbours(tmp,q,unchecked);
+                checkNeighbours(tmp,q,unchecked);       /* all the unchecked neighbours of tmp are added to q */
 
             }
 
-
+            /* Redrop of the unlinked nodes from the "main" cluster ONE at a time*/
             if(unchecked.size() != 0){
                 count++;
                 User* tmp = *(unchecked.begin());
                 do{
                     count2++;
                     redropUser(tmp);
-                }while(!checkNewConnections(tmp,checked));
+                }while(!checkNewConnections(tmp,checked)); /* Check that is connected to AT LEAST one connected node */
 
 
             }
@@ -116,13 +120,17 @@ namespace epidemicbroadcast {
         int otherPosX;
         int otherPosY;
         for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
-            otherPosX = (*itr)->posX;
+
+            if(isInTxRadius(user,*itr))
+                    q.push(*itr);
+
+            /*otherPosX = (*itr)->posX;
             otherPosY = (*itr)->posY;
 
            if(pow(myPosX - otherPosX,2) + pow(myPosY - otherPosY,2) <= pow(this->R,2)){
                q.push(*itr);
 
-           }
+           }*/
 
         }
     }

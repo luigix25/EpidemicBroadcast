@@ -44,7 +44,7 @@ namespace epidemicbroadcast {
 
     void Oracle::finish(){
         recordScalar("#unlinkedNodes", this->unlinkedNodes);
-        recordScalar("#totalNumberOfRedrops", this->totalNumberOfRedrops);
+        //recordScalar("#totalNumberOfRedrops", this->totalNumberOfRedrops);
 
         EV<<"Unlinked: "<<this->unlinkedNodes<<endl;
         EV<<"totalNumberOfRedrops: "<<this->totalNumberOfRedrops<<endl;

@@ -36,7 +36,7 @@ class Oracle : public cSimpleModule{
         int XLimit, YLimit;
         bool redrop;
 
-        //RNG to be used for Backoff computation
+        //RNG to be used for Backoff computation TODO: non serve più
         int RNGPosition;
 
         // For stats

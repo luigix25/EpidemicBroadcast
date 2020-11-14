@@ -219,14 +219,14 @@ void User::finish(){
     if (this->sendInitialMessage)
         recordScalar("#SimTime[ms]", simTime() * ONE_SECOND + this->slotSize);
 
-    recordScalar("#PacketCount", this->receivedPackets);
-    recordScalar("#Collision", this->collisions);
-    recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
+    //recordScalar("#PacketCount", this->receivedPackets);
+    //recordScalar("#Collision", this->collisions);
+    //recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
 
     if( this->receivedPacketsInTSlots >= this->m || this->sendInitialMessage){
-        recordScalar("#SendMessage", 1);
+        //recordScalar("#SendMessage", 1);
     } else{
-        recordScalar("#SendMessage", 0);
+        //recordScalar("#SendMessage", 0);
     }
 
 

@@ -22,8 +22,8 @@ namespace epidemicbroadcast {
     void Oracle::initialize(){
 
         this->nNeighbours   = par("nNeighbours").intValue();
-        this->XLimit        = par("nNeighbours").intValue();
-        this->YLimit        = par("nNeighbours").intValue();
+        this->XLimit        = par("XLimit").intValue();
+        this->YLimit        = par("YLimit").intValue();
         this->R             = par("R").intValue();
         this->redrop        = par("redrop").boolValue();
         this->RNGPosition   = par("RNGPosition").intValue();
@@ -43,7 +43,12 @@ namespace epidemicbroadcast {
     }
 
     void Oracle::finish(){
-        //recordScalar("#PacketCount", this->receivedPackets);
+        recordScalar("#unlinkedNodes", this->unlinkedNodes);
+        recordScalar("#totalNumberOfRedrops", this->totalNumberOfRedrops);
+
+        EV<<"Unlinked: "<<this->unlinkedNodes<<endl;
+        EV<<"totalNumberOfRedrops: "<<this->totalNumberOfRedrops<<endl;
+
     }
 
     void Oracle::marking(){
@@ -55,9 +60,7 @@ namespace epidemicbroadcast {
         unordered_set<User*> unchecked;
         queue<User*> q;
 
-        /*int count = 0;
-        int count2 = 0;
-         */
+        bool firstIteration = true;
 
         /* All the nodes are uncheked */
         for(int i = 0; i < this->nNeighbours; i++)
@@ -79,8 +82,11 @@ namespace epidemicbroadcast {
 
             }
 
-            this->unlinkedNodes = unchecked.size();
-            EV<<this->unlinkedNodes<<endl;
+            /* unlikedNodes is set to the initial number of unliked nodes and not updated afterwards*/
+            if(firstIteration){
+                this->unlinkedNodes = unchecked.size();
+                firstIteration = false;
+            }
 
             if(!this->redrop){
                 return;
@@ -88,7 +94,6 @@ namespace epidemicbroadcast {
 
             /* Redrop of the unlinked nodes from the "main" cluster ONE at a time*/
             if(unchecked.size() != 0){
-                //count++;
                 User* tmp = *(unchecked.begin());
                 do{
                     this->totalNumberOfRedrops++;
@@ -107,11 +112,11 @@ namespace epidemicbroadcast {
         }
 
 
-        EV<<"CHECKED:"<<checked.size() << endl;
+        //EV<<"CHECKED:"<<checked.size() << endl;
         /*for(auto itr = checked.begin(); itr != checked.end(); itr++){
             EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
         }*/
-        EV<<"UNCHECKED:"<<unchecked.size()<<endl;
+        //EV<<"UNCHECKED:"<<unchecked.size()<<endl;
 
         /*for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
             EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;

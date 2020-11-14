@@ -115,7 +115,8 @@ void User::handleMessage(cMessage *msg)
             //TODO: sistemareProb
 
             //ScheduleAt wants seconds and slotSize is in milliseconds
-            delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / ONE_SECOND;
+            //delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / ONE_SECOND;
+            delayTime = this->slotSize * this->T / ONE_SECOND;
 
             EV<<"DELAY TIME: ";
             EV<<delayTime<<endl;

@@ -73,19 +73,34 @@ for key in receivedPacketsValues.keys():
 y_values = []
 x_values = []
 
-for key in collisionValues.keys():
+for key in meanCollision.keys():
     y_values.append(meanCollision[key])    
     x_values.append(key)
 
-#for key in meanCollision.keys():
-#    y_values.append(meanCollision[key])    
-#    x_values.append(key)
 
 plt.title('Collision Analysis')
 plt.xlabel('T,M')
 plt.ylabel('Avg Collisions')
-#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
+plt.xticks(rotation=90)
+plt.xticks(range(len(x_values)), x_values, size='small') 
 #plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
 plt.grid(True)
 plt.scatter(x_values, y_values)
 plt.savefig('graph_collisions.png')
+
+y_values = []
+x_values = []
+
+for key in meanReceivedPackets.keys():
+    y_values.append(meanReceivedPackets[key])    
+    x_values.append(key)
+
+plt.title('Received Packets Analysis')
+plt.xlabel('T,M')
+plt.ylabel('Avg Packets Received')
+plt.xticks(rotation=90)
+#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
+#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
+plt.grid(True)
+plt.scatter(x_values, y_values)
+plt.savefig('graph_packets.png')

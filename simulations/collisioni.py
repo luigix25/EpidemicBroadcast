@@ -4,21 +4,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
-path = 'results/'
+path = 'results'
 
-#Estrae l'header dal file
 def extractHeader(rowFile):
-    # Riga nel file, nome che do alla chiave nella hasmap che poi ritorno
-    names = {21:"y",20:"x",19:"redrop",18: "radius",17: "m",16: "T",15:"slotSize",14:"users",13:"seed"}
+    names = {}
 
-    ret = {}
+    for i in range(0,50):           #hardcoded, but enough room for other attributes 
+        if rowFile['type'][i] != "param":
+            continue
 
-    matrix = rowFile['attrvalue']
+        name = rowFile['attrname'][i]
+        name = name.replace("**.","")
+        name = name.replace("EpidemicBroadcast.","")
 
-    for key in names.keys():
-        ret[names[key]] = matrix[key]
-        
-    return ret;
+        names[name] = rowFile['attrvalue'][i]
+
+
+    return names;
+
 
 collisionValues = {}
 receivedPacketsValues = {}
@@ -28,14 +31,18 @@ files = os.listdir(path)
 
 for file in files:
     if file.endswith(".csv"):
-        rowFile = pd.read_csv(path + file)
+        rowFile = pd.read_csv(os.path.join(path,file))
         #print(rowFile)
 
         header = extractHeader(rowFile)
+
         custom_key = header['m']+':'+header['T']
 
         #22 sarebbe simTime
-        for i in range(23,len(rowFile['value'])):
+        for i in range(0,len(rowFile['value'])):
+            if rowFile['type'][i] != 'scalar':      #Skipping the header
+                continue
+
             #print(rowFile['value'][i])
             if(rowFile['name'][i] == '#Collision'):
                 if not custom_key in collisionValues:
@@ -74,9 +81,9 @@ for key in collisionValues.keys():
 #    y_values.append(meanCollision[key])    
 #    x_values.append(key)
 
-plt.title('Radius analysis')
-plt.xlabel('Radius')
-plt.ylabel('Unlinked nodes')
+plt.title('Collision Analysis')
+plt.xlabel('T,M')
+plt.ylabel('Avg Collisions')
 #plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
 #plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
 plt.grid(True)

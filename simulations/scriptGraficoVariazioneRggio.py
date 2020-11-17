@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-%matplotlib inline
+#%matplotlib inline
 
 path = 'results/'
 
@@ -23,7 +23,7 @@ def extractHeader(rowFile):
 allValues = {}
 files = os.listdir(path)
 #scorro tutti i file e mi salvo nella hashmap key(radius)-vector(values) tutti i valori 
-i = 0;
+
 for file in files:
     if file.endswith(".csv"):
         rowFile = pd.read_csv(path + file)
@@ -59,3 +59,4 @@ plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
 plt.yticks(np.arange(min(unlinked), max(unlinked)+50, 10.0))
 plt.grid(True)
 plt.scatter(radius, unlinked)
+plt.savefig('graph.png')

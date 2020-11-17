@@ -24,7 +24,7 @@ namespace epidemicbroadcast {
 
 #define ONE_SECOND 1000.0
 
-enum status{WAITING, SCHEDULING, LISTENING, DONE};
+enum status{WAITING, SCHEDULING, LISTENING, WAITING_FOR_SEND ,DONE};
 
 /**
  * Implements the Txc simple module. See the NED file for more information.

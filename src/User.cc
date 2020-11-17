@@ -118,9 +118,6 @@ void User::handleMessage(cMessage *msg)
             //delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / ONE_SECOND;
             delayTime = this->slotSize * this->T / ONE_SECOND;
 
-            EV<<"DELAY TIME: ";
-            EV<<delayTime<<endl;
-
             scheduleAt(currentTime + delayTime ,scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
             EV<<"Status from waiting to scheduling"<<endl;
@@ -134,6 +131,8 @@ void User::handleMessage(cMessage *msg)
         case LISTENING:
             this->receivedPacketsInTSlots++;
             break;
+
+
 /*
 //TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
         case DONE:
@@ -199,16 +198,38 @@ void User::handleCollision(){
 
 void User::handleSelfMessage(cMessage *msg){
 
-    //No matter if i send or not, i do not have to do anything else.
-    this->currentStatus = DONE;
 
-    if(this->receivedPacketsInTSlots < this->m){
-        broadcastMessage(msg);
-    } else {
-        EV<<"Broadcast suppressed"<<endl;
+    switch(this->currentStatus){
+
+        case WAITING_FOR_SEND:
+            //No matter if i send or not, i do not have to do anything else.
+            this->currentStatus = DONE;
+            broadcastMessage(msg);
+            delete msg;
+
+            break;
+        case SCHEDULING:
+        case LISTENING:
+
+            if(this->receivedPacketsInTSlots < this->m){
+
+                //-1 altrimenti mando in T slot, ma ascolto in T-1
+                simtime_t delayTime = this->slotSize * intuniform(0, this->T-1,this->RNGBackoff) / ONE_SECOND;
+                EV<<"DELAY TIME: ";
+                EV<<delayTime<<endl;
+                this->currentStatus = WAITING_FOR_SEND;
+                scheduleAt(simTime() + delayTime ,msg);
+
+            } else {
+                EV<<"Broadcast suppressed"<<endl;
+                delete msg;
+
+            }
+
+
     }
 
-    delete msg;
+
 
 }
 

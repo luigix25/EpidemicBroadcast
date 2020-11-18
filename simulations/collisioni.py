@@ -46,12 +46,14 @@ def orderkey(list):
 collisionValues = {}
 receivedPacketsValues = {}
 coveredValues = {}
+simTimeValues = {}
 
 files = os.listdir(path)
 #scorro tutti i file e mi salvo nella hashmap key(radius)-vector(values) tutti i valori 
 
 for file in files:
     if file.endswith(".csv"):
+        coveredValuesTmp = []
         rowFile = pd.read_csv(os.path.join(path,file))
         #print(rowFile)
 
@@ -75,10 +77,19 @@ for file in files:
                 receivedPacketsValues[custom_key].append(rowFile['value'][i])
 
             elif(rowFile['name'][i] == '#Covered'):
-                if not custom_key in coveredValues:
-                    coveredValues[custom_key] = []
-                coveredValues[custom_key].append(rowFile['value'][i])
+                coveredValuesTmp.append(rowFile['value'][i])
 
+
+            elif (rowFile['name'][i] == '#SimTime[ms]'):
+                if not custom_key in simTimeValues:
+                    simTimeValues[custom_key] = []
+                simTimeValues[custom_key].append(rowFile['value'][i])
+        sum = 0
+        for val in coveredValuesTmp:
+            sum += val
+        if not custom_key in coveredValues:
+            coveredValues[custom_key] = []
+        coveredValues[custom_key].append(sum)
 
 
 
@@ -104,7 +115,7 @@ for key in keyOrdered1:
 
 plt.figure(figsize=(20,10))
 plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0);
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
 plt.title('Collision Analysis')
 plt.xlabel('T,M')
 plt.ylabel('Avg Collisions')
@@ -138,7 +149,7 @@ for key in keyOrdered2:
 
 plt.figure(figsize=(20,10))
 plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0);
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
 plt.title('Received Packets Analysis')
 plt.xlabel('t,m')
 plt.ylabel('Avg Packets Received')
@@ -155,6 +166,7 @@ meanCovered = {}
 for key in coveredValues.keys():
     curr = coveredValues[key]
     meanCovered[key] = np.mean(curr)
+    #print(np.mean(curr))
     ciCovered[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
 
 y_values = []
@@ -171,7 +183,7 @@ for key in keyOrdered3:
 
 plt.figure(figsize=(20,10))
 plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0);
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
 plt.title('Covered Analysis')
 plt.xlabel('t,m')
 plt.ylabel('Avg Covered')
@@ -185,7 +197,6 @@ plt.savefig('graph_covered.png')
 
 y_values = []
 x_values = []
-ci = []
 
 keyOrdered3 = orderkey(meanCovered)
 
@@ -207,3 +218,55 @@ plt.grid(True)
 plt.scatter(x_values, y_values)
 plt.savefig('graph_collisionOverCovered.png')
 
+#SIMTIME
+ciSimTime = {}
+meanSimTime = {}
+for key in simTimeValues.keys():
+    curr = simTimeValues[key]
+    meanSimTime[key] = np.mean(curr)
+    ciSimTime[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
+y_values = []
+x_values = []
+ci = []
+
+keyOrdered3 = orderkey(meanCovered)
+
+for key in keyOrdered3:
+    y_values.append(meanSimTime[key])
+    x_values.append(key)
+    ci.append(ciSimTime[key])
+
+
+
+plt.figure(figsize=(20,10))
+plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
+plt.title('Simulation Time Analysis')
+plt.xlabel('t,m')
+plt.ylabel('Avg Simulation Time [ms]')
+#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
+#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
+plt.grid(True)
+plt.scatter(x_values, y_values)
+plt.savefig('graph_simTime.png')
+
+#SIMTIME / COVERED
+
+y_values = []
+x_values = []
+
+keyOrdered3 = orderkey(meanCovered)
+
+for key in keyOrdered3:
+    y_values.append(meanSimTime[key]/meanCovered[key])
+    x_values.append(key)
+
+plt.figure(figsize=(20,10))
+plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
+
+plt.title('SimTime/Covered Analysis')
+plt.xlabel('t,m')
+plt.ylabel('Avg SimTime/Covered')
+plt.grid(True)
+plt.scatter(x_values, y_values)
+plt.savefig('graph_simTimeOverCovered.png')

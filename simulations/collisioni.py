@@ -181,3 +181,29 @@ plt.grid(True)
 plt.scatter(x_values, y_values)
 plt.savefig('graph_covered.png')
 
+#COLLISION / COVERED
+
+y_values = []
+x_values = []
+ci = []
+
+keyOrdered3 = orderkey(meanCovered)
+
+for key in keyOrdered3:
+    y_values.append(meanCollision[key]/meanCovered[key])
+    x_values.append(key)
+
+
+
+plt.figure(figsize=(20,10))
+plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
+
+plt.title('Collision/Covered Analysis')
+plt.xlabel('t,m')
+plt.ylabel('Avg Collision/Covered')
+#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
+#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
+plt.grid(True)
+plt.scatter(x_values, y_values)
+plt.savefig('graph_collisionOverCovered.png')
+

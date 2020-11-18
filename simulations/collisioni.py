@@ -45,6 +45,7 @@ def orderkey(list):
 
 collisionValues = {}
 receivedPacketsValues = {}
+coveredValues = {}
 
 files = os.listdir(path)
 #scorro tutti i file e mi salvo nella hashmap key(radius)-vector(values) tutti i valori 
@@ -66,34 +67,44 @@ for file in files:
             if(rowFile['name'][i] == '#Collision'):
                 if not custom_key in collisionValues:
                     collisionValues[custom_key] = []
-
                 collisionValues[custom_key].append(rowFile['value'][i])
+
             elif(rowFile['name'][i] == '#ReceivePacketInTSlots'):
                 if not custom_key in receivedPacketsValues:
                     receivedPacketsValues[custom_key] = []
-
                 receivedPacketsValues[custom_key].append(rowFile['value'][i])
 
+            elif(rowFile['name'][i] == '#Covered'):
+                if not custom_key in coveredValues:
+                    coveredValues[custom_key] = []
+                coveredValues[custom_key].append(rowFile['value'][i])
 
+
+
+
+# COLLISION
 meanCollision = {}
-meanReceivedPackets = {}
-
+ciCollision = {}
 for key in collisionValues.keys():
     curr = collisionValues[key]
     meanCollision[key] = np.mean(curr)
+    ciCollision[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
     #print(meanCollision[key])
 
 
 
 y_values = []
 x_values = []
+ci = []
 keyOrdered1 = orderkey(meanCollision)
 for key in keyOrdered1:
     y_values.append(meanCollision[key])    
     x_values.append(key)
+    ci.append(ciCollision[key])
 
 plt.figure(figsize=(20,10))
 plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0);
 plt.title('Collision Analysis')
 plt.xlabel('T,M')
 plt.ylabel('Avg Collisions')
@@ -101,27 +112,33 @@ plt.xticks(range(len(x_values)), x_values, size='small')
 #plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
 plt.grid(True)
 plt.scatter(x_values, y_values)
+#plt.fill_between(x_values, (y_values-ci), (y_values+ci), color='b', alpha=.1)
 plt.savefig('graph_collisions.png')
 
 
-
-
+#RECEIVED PACKETS
+ciReceivedPackets = {}
+meanReceivedPackets = {}
 for key in receivedPacketsValues.keys():
     curr = receivedPacketsValues[key]
     meanReceivedPackets[key] = np.mean(curr)
+    ciReceivedPackets[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
 
 y_values = []
 x_values = []
+ci = []
 
 keyOrdered2 = orderkey(meanReceivedPackets)
 
 for key in keyOrdered2:
     y_values.append(meanReceivedPackets[key])
     x_values.append(key)
+    ci.append(ciReceivedPackets[key])
 
 
 plt.figure(figsize=(20,10))
 plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0);
 plt.title('Received Packets Analysis')
 plt.xlabel('t,m')
 plt.ylabel('Avg Packets Received')
@@ -130,4 +147,37 @@ plt.ylabel('Avg Packets Received')
 plt.grid(True)
 plt.scatter(x_values, y_values)
 plt.savefig('graph_packets.png')
+
+
+#COVERED
+ciCovered = {}
+meanCovered = {}
+for key in coveredValues.keys():
+    curr = coveredValues[key]
+    meanCovered[key] = np.mean(curr)
+    ciCovered[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
+
+y_values = []
+x_values = []
+ci = []
+
+keyOrdered3 = orderkey(meanCovered)
+
+for key in keyOrdered3:
+    y_values.append(meanCovered[key])
+    x_values.append(key)
+    ci.append(ciCovered[key])
+
+
+plt.figure(figsize=(20,10))
+plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
+plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0);
+plt.title('Covered Analysis')
+plt.xlabel('t,m')
+plt.ylabel('Avg Covered')
+#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
+#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
+plt.grid(True)
+plt.scatter(x_values, y_values)
+plt.savefig('graph_covered.png')
 

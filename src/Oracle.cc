@@ -150,6 +150,8 @@ namespace epidemicbroadcast {
     }
 
     void Oracle::redropUser(User* user){
+       // user->posX = intuniform(0,this->XLimit,this->RNGPosition);
+       // user->posY = intuniform(0,this->YLimit,this->RNGPosition);
         user->posX = intuniform(0,this->XLimit,this->RNGPosition);
         user->posY = intuniform(0,this->YLimit,this->RNGPosition);
         cDisplayString& dispStr = user->getDisplayString();

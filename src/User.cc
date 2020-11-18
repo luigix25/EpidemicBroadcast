@@ -250,6 +250,12 @@ void User::finish(){
         recordScalar("#SendMessage", 0);
     }
 
+    if( this->currentStatus == DONE){
+        recordScalar("#Covered", 1);
+    } else{
+        recordScalar("#Covered", 0);
+    }
+
 
     //emit(packetCountSignal,this->receivedPackets);
 

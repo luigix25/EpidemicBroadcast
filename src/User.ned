@@ -39,8 +39,8 @@ simple User
             	
 		int slotSize @unit(milliseconds)	= default(1000ms);
 				
-		int posX = default(intuniform (0, XLimit, RNGPosition));
-		int posY = default(intuniform (0, YLimit, RNGPosition));    		
+		double posX = default(uniform (0, XLimit, RNGPosition));
+		double posY = default(uniform (0, YLimit, RNGPosition));    		
 		@display("p=$posX,$posY;r=$R");    
 		
 		//@signal[packets](source="packets";type=int);

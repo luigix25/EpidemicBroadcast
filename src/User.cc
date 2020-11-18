@@ -26,8 +26,8 @@ void User::initialize(int stage)
 
         gate("radioIn")->setDeliverOnReceptionStart(true);
 
-        this->posX = par("posX").intValue();
-        this->posY = par("posY").intValue();
+        this->posX = par("posX").doubleValue();
+        this->posY = par("posY").doubleValue();
 
         this->nNeighbours = par("nNeighbours").intValue();
 

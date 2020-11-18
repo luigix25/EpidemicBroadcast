@@ -33,8 +33,8 @@ class User : public cSimpleModule
 {
 
     public:
-        int posX;
-        int posY;
+        double posX;
+        double posY;
 
 
         bool sendInitialMessage = false;

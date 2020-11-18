@@ -103,48 +103,22 @@ namespace epidemicbroadcast {
 
             }
 
-            /*while(unchecked.size() != 0){
-                User* tmp = *(unchecked.begin());
-                unchecked.erase(tmp);
-                redropUser(tmp);
-            }*/
-            //checkNewConnections(tmp,checked,unchecked);
         }
 
 
-        //EV<<"CHECKED:"<<checked.size() << endl;
-        /*for(auto itr = checked.begin(); itr != checked.end(); itr++){
-            EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
-        }*/
-        //EV<<"UNCHECKED:"<<unchecked.size()<<endl;
-
-        /*for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
-            EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
-        }
-
-        EV << "Numero Redrop: " << count << endl;
-        EV << "Numero Redrop totali: " << count2 << endl;*/
 
     }
 
     void Oracle::checkNeighbours(User* user, queue<User*> &q,unordered_set<User*>& unchecked){
 
-        int myPosX = user->posX;
-        int myPosY = user->posY;
-        int otherPosX;
-        int otherPosY;
+        double myPosX = user->posX;
+        double myPosY = user->posY;
+        double otherPosX;
+        double otherPosY;
         for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
 
             if(isInTxRadius(user,*itr))
                     q.push(*itr);
-
-            /*otherPosX = (*itr)->posX;
-            otherPosY = (*itr)->posY;
-
-           if(pow(myPosX - otherPosX,2) + pow(myPosY - otherPosY,2) <= pow(this->R,2)){
-               q.push(*itr);
-
-           }*/
 
         }
     }
@@ -152,8 +126,8 @@ namespace epidemicbroadcast {
     void Oracle::redropUser(User* user){
        // user->posX = intuniform(0,this->XLimit,this->RNGPosition);
        // user->posY = intuniform(0,this->YLimit,this->RNGPosition);
-        user->posX = intuniform(0,this->XLimit,this->RNGPosition);
-        user->posY = intuniform(0,this->YLimit,this->RNGPosition);
+        user->posX = uniform(0,this->XLimit,this->RNGPosition);
+        user->posY = uniform(0,this->YLimit,this->RNGPosition);
         cDisplayString& dispStr = user->getDisplayString();
         dispStr.setTagArg("p", 0, user->posX);
         dispStr.setTagArg("p", 1, user->posY);

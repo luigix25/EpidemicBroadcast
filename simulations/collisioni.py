@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
+confidanceLevel = 1.96
+order_by = 'm' # t or m, ordinamento asse x
 path = 'results'
 
 def extractHeader(rowFile):
@@ -37,12 +39,50 @@ def orderkey(list):
 
     keyOrdered = []
     # Genero i label ordinati
-    for t in range(minT, maxT+1, 1):
+    if order_by == 't':
+        for t in range(minT, maxT+1, 1):
+            for m in range(minM, maxM+1, 1):
+                if m <= t:
+                    keyOrdered.append("t:" + str(t) + "-" + "m:" + str(m))
+    elif order_by == 'm':
         for m in range(minM, maxM+1, 1):
-            if m <= t:
-                keyOrdered.append("t:" + str(t) + "-" + "m:" + str(m))
+            for t in range(minT, maxT+1, 1):
+                if m <= t:
+                    keyOrdered.append("t:" + str(t) + "-" + "m:" + str(m))
+    else:
+        print("[ERRORE] Selezionare correttamente un ordinamento dell'asse x")
+        exit()
     return keyOrdered
+    #End orderkey(list)
 
+def print_graph_TM(title, values):
+    mean_values = {}
+    ci_values = {}
+    for key in values.keys():
+        curr = values[key]
+        mean_values[key] = np.mean(curr)
+        ci_values[key] = confidanceLevel * (np.std(curr) / np.sqrt(len(curr)))
+
+    y = []
+    x = []
+    ci = []
+    key_ordered = orderkey(mean_values)
+    for key in key_ordered:
+        y.append(mean_values[key])
+        x.append(key)
+        ci.append(ci_values[key])
+
+    plt.figure(figsize=(20, 10))
+    plt.xticks(range(len(x)), x, size='small', rotation=90)
+    plt.errorbar(x, y, color='black', yerr=ci, fmt='o', ecolor='red', elinewidth=3, capsize=0)
+    plt.title(title + " Analysis")
+    plt.xlabel('T,M')
+    plt.ylabel("Avg " + title)
+    plt.xticks(range(len(x)), x, size='small')
+    plt.grid(True)
+    plt.scatter(x, y)
+    plt.savefig("graph_" + title + ".png")
+    #End print_graph_TM(title, values)
 collisionValues = {}
 receivedPacketsValues = {}
 coveredValues = {}
@@ -93,106 +133,17 @@ for file in files:
 
 
 
-# COLLISION
-meanCollision = {}
-ciCollision = {}
-for key in collisionValues.keys():
-    curr = collisionValues[key]
-    meanCollision[key] = np.mean(curr)
-    ciCollision[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
-    #print(meanCollision[key])
+
+print_graph_TM("Collision",collisionValues)
+
+print_graph_TM("ReceivedPackets",receivedPacketsValues)
+
+print_graph_TM("Covered",coveredValues)
+
+print_graph_TM("SimulationTime",simTimeValues)
 
 
-
-y_values = []
-x_values = []
-ci = []
-keyOrdered1 = orderkey(meanCollision)
-for key in keyOrdered1:
-    y_values.append(meanCollision[key])    
-    x_values.append(key)
-    ci.append(ciCollision[key])
-
-plt.figure(figsize=(20,10))
-plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
-plt.title('Collision Analysis')
-plt.xlabel('T,M')
-plt.ylabel('Avg Collisions')
-plt.xticks(range(len(x_values)), x_values, size='small')
-#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
-plt.grid(True)
-plt.scatter(x_values, y_values)
-#plt.fill_between(x_values, (y_values-ci), (y_values+ci), color='b', alpha=.1)
-plt.savefig('graph_collisions.png')
-
-
-#RECEIVED PACKETS
-ciReceivedPackets = {}
-meanReceivedPackets = {}
-for key in receivedPacketsValues.keys():
-    curr = receivedPacketsValues[key]
-    meanReceivedPackets[key] = np.mean(curr)
-    ciReceivedPackets[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
-
-y_values = []
-x_values = []
-ci = []
-
-keyOrdered2 = orderkey(meanReceivedPackets)
-
-for key in keyOrdered2:
-    y_values.append(meanReceivedPackets[key])
-    x_values.append(key)
-    ci.append(ciReceivedPackets[key])
-
-
-plt.figure(figsize=(20,10))
-plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
-plt.title('Received Packets Analysis')
-plt.xlabel('t,m')
-plt.ylabel('Avg Packets Received')
-#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
-#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
-plt.grid(True)
-plt.scatter(x_values, y_values)
-plt.savefig('graph_packets.png')
-
-
-#COVERED
-ciCovered = {}
-meanCovered = {}
-for key in coveredValues.keys():
-    curr = coveredValues[key]
-    meanCovered[key] = np.mean(curr)
-    #print(np.mean(curr))
-    ciCovered[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
-
-y_values = []
-x_values = []
-ci = []
-
-keyOrdered3 = orderkey(meanCovered)
-
-for key in keyOrdered3:
-    y_values.append(meanCovered[key])
-    x_values.append(key)
-    ci.append(ciCovered[key])
-
-
-plt.figure(figsize=(20,10))
-plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
-plt.title('Covered Analysis')
-plt.xlabel('t,m')
-plt.ylabel('Avg Covered')
-#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
-#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
-plt.grid(True)
-plt.scatter(x_values, y_values)
-plt.savefig('graph_covered.png')
-
+'''
 #COLLISION / COVERED
 
 y_values = []
@@ -218,38 +169,6 @@ plt.grid(True)
 plt.scatter(x_values, y_values)
 plt.savefig('graph_collisionOverCovered.png')
 
-#SIMTIME
-ciSimTime = {}
-meanSimTime = {}
-for key in simTimeValues.keys():
-    curr = simTimeValues[key]
-    meanSimTime[key] = np.mean(curr)
-    ciSimTime[key] = 1.96 * (np.std(curr) / np.sqrt(len(curr)))
-y_values = []
-x_values = []
-ci = []
-
-keyOrdered3 = orderkey(meanCovered)
-
-for key in keyOrdered3:
-    y_values.append(meanSimTime[key])
-    x_values.append(key)
-    ci.append(ciSimTime[key])
-
-
-
-plt.figure(figsize=(20,10))
-plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-plt.errorbar(x_values, y_values, color='black', yerr=ci, fmt='o',ecolor='red', elinewidth=3, capsize=0)
-plt.title('Simulation Time Analysis')
-plt.xlabel('t,m')
-plt.ylabel('Avg Simulation Time [ms]')
-#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
-#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
-plt.grid(True)
-plt.scatter(x_values, y_values)
-plt.savefig('graph_simTime.png')
-
 #SIMTIME / COVERED
 
 y_values = []
@@ -270,3 +189,4 @@ plt.ylabel('Avg SimTime/Covered')
 plt.grid(True)
 plt.scatter(x_values, y_values)
 plt.savefig('graph_simTimeOverCovered.png')
+'''

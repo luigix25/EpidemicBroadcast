@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#%matplotlib inline
 
 confidanceLevel = 1.96
 order_by = 'm' # t or m, ordinamento asse x
@@ -55,7 +54,7 @@ def orderkey(list):
     return keyOrdered
     #End orderkey(list)
 
-def print_graph_TM(title, values):
+def print_graph_TM(title, values, path):
     mean_values = {}
     ci_values = {}
     for key in values.keys():
@@ -81,8 +80,38 @@ def print_graph_TM(title, values):
     plt.xticks(range(len(x)), x, size='small')
     plt.grid(True)
     plt.scatter(x, y)
-    plt.savefig("graph_" + title + ".png")
+    plt.savefig(os.path.join(path, title +".png"))
     #End print_graph_TM(title, values)
+
+
+def print_graph_TM_ratio(title, values_numerator, values_denominator, path):
+    mean_numerator_values = {}
+    mean_denominator_values = {}
+    for key in  values_numerator.keys():
+        mean_numerator_values[key] = np.mean(values_numerator[key])
+        mean_denominator_values[key] = np.mean(values_denominator[key])
+
+    y = []
+    x = []
+    key_ordered = orderkey(mean_numerator_values)
+    for key in key_ordered:
+        y.append(mean_numerator_values[key]/mean_denominator_values[key])
+        x.append(key)
+
+
+    plt.figure(figsize=(20, 10))
+    plt.xticks(range(len(x)), x, size='small', rotation=90)
+    #plt.errorbar(x, y, color='black', yerr=ci, fmt='o', ecolor='red', elinewidth=3, capsize=0)
+    plt.title(title + " Analysis")
+    plt.xlabel('T,M')
+    plt.ylabel("Avg " + title)
+    plt.xticks(range(len(x)), x, size='small')
+    plt.grid(True)
+    plt.scatter(x, y)
+    plt.savefig(os.path.join(path, title +".png"))
+    #End print_graph_TM_ratio(title, values)
+
+
 collisionValues = {}
 receivedPacketsValues = {}
 coveredValues = {}
@@ -131,62 +160,39 @@ for file in files:
             coveredValues[custom_key] = []
         coveredValues[custom_key].append(sum)
 
+#Genero il nome della cartella e la creo
+folderTitle = "Radius(" + header['R'] + ")_Redrop(" + header['redrop'] + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")"
+save_path = os.path.join("graph",folderTitle)
+os.mkdir(save_path)
+
+#Stampo ordinando per m
+order_by = "m"
+
+print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
+
+print_graph_TM("ReceivedPackets("+order_by+")",receivedPacketsValues, save_path)
+
+print_graph_TM("Covered("+order_by+")",coveredValues, save_path)
+
+print_graph_TM("SimulationTime("+order_by+")",simTimeValues, save_path)
+
+print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
+
+print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)
+
+#Stampo ordinando per t
+order_by = "t"
+
+print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
+
+print_graph_TM("ReceivedPackets("+order_by+")",receivedPacketsValues, save_path)
+
+print_graph_TM("Covered("+order_by+")",coveredValues, save_path)
+
+print_graph_TM("SimulationTime("+order_by+")",simTimeValues, save_path)
+
+print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
+
+print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)
 
 
-
-print_graph_TM("Collision",collisionValues)
-
-print_graph_TM("ReceivedPackets",receivedPacketsValues)
-
-print_graph_TM("Covered",coveredValues)
-
-print_graph_TM("SimulationTime",simTimeValues)
-
-
-'''
-#COLLISION / COVERED
-
-y_values = []
-x_values = []
-
-keyOrdered3 = orderkey(meanCovered)
-
-for key in keyOrdered3:
-    y_values.append(meanCollision[key]/meanCovered[key])
-    x_values.append(key)
-
-
-
-plt.figure(figsize=(20,10))
-plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-
-plt.title('Collision/Covered Analysis')
-plt.xlabel('t,m')
-plt.ylabel('Avg Collision/Covered')
-#plt.xticks(np.arange(min(radius), max(radius)+50, 50.0))
-#plt.yticks(np.arange(min(y_values), max(y_values)+50, 10.0))
-plt.grid(True)
-plt.scatter(x_values, y_values)
-plt.savefig('graph_collisionOverCovered.png')
-
-#SIMTIME / COVERED
-
-y_values = []
-x_values = []
-
-keyOrdered3 = orderkey(meanCovered)
-
-for key in keyOrdered3:
-    y_values.append(meanSimTime[key]/meanCovered[key])
-    x_values.append(key)
-
-plt.figure(figsize=(20,10))
-plt.xticks(range(len(x_values)), x_values, size='small',rotation=90)
-
-plt.title('SimTime/Covered Analysis')
-plt.xlabel('t,m')
-plt.ylabel('Avg SimTime/Covered')
-plt.grid(True)
-plt.scatter(x_values, y_values)
-plt.savefig('graph_simTimeOverCovered.png')
-'''

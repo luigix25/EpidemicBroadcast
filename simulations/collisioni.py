@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import shutil
 
 confidanceLevel = 1.96
 order_by = 'm' # t or m, ordinamento asse x
@@ -116,6 +117,8 @@ collisionValues = {}
 receivedPacketsValues = {}
 coveredValues = {}
 simTimeValues = {}
+sendMessageValues = {}
+neighborsValues = {}
 
 files = os.listdir(path)
 #scorro tutti i file e mi salvo nella hashmap key(radius)-vector(values) tutti i valori 
@@ -123,13 +126,11 @@ files = os.listdir(path)
 for file in files:
     if file.endswith(".csv"):
         coveredValuesTmp = []
+        sendMessageValuesTmp = []
         rowFile = pd.read_csv(os.path.join(path,file))
-        #print(rowFile)
-
         header = extractHeader(rowFile)
-
         custom_key = "t:"+header['T']+"-"+"m:"+header['m']
-
+        #Scorro un file
         for i in range(0,len(rowFile['value'])):
             if rowFile['type'][i] != 'scalar':      #Skipping the header
                 continue
@@ -148,51 +149,64 @@ for file in files:
             elif(rowFile['name'][i] == '#Covered'):
                 coveredValuesTmp.append(rowFile['value'][i])
 
-
             elif (rowFile['name'][i] == '#SimTime[ms]'):
                 if not custom_key in simTimeValues:
                     simTimeValues[custom_key] = []
                 simTimeValues[custom_key].append(rowFile['value'][i])
-        sum = 0
+
+            elif (rowFile['name'][i] == '#SendMessage'):
+                sendMessageValuesTmp.append(rowFile['value'][i])
+            '''
+            elif (rowFile['name'][i] == '#Neighbors'):
+                if not custom_key in neighborsValues:
+                    neighborsValues[custom_key] = []
+                neighborsValues[custom_key].append(rowFile['value'][i])
+            '''
+        #Fine File
+        #Dopo ogni file aggiungo la statistica dei boolean
+        sumCovered = 0
         for val in coveredValuesTmp:
-            sum += val
+            sumCovered += val
         if not custom_key in coveredValues:
             coveredValues[custom_key] = []
-        coveredValues[custom_key].append(sum)
+        coveredValues[custom_key].append(sumCovered)
+
+        #Dopo ogni file aggiungo la statistica dei boolean
+        sumSendMessage = 0
+        for val in sendMessageValuesTmp:
+            sumSendMessage += val
+        if not custom_key in sendMessageValues:
+            sendMessageValues[custom_key] = []
+        sendMessageValues[custom_key].append(sumSendMessage)
 
 #Genero il nome della cartella e la creo
 folderTitle = "Radius(" + header['R'] + ")_Redrop(" + header['redrop'] + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")"
 save_path = os.path.join("graph",folderTitle)
+#Se la cartella esiste già la rimuovo prima
+if os.path.exists(save_path):
+    shutil.rmtree(save_path, ignore_errors=True)
 os.mkdir(save_path)
 
-#Stampo ordinando per m
-order_by = "m"
+order_key = ["t","m"]
 
-print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
+#Stampo ordinando prima per t poi per m
+for order in order_key:
+    order_by = order
 
-print_graph_TM("ReceivedPackets("+order_by+")",receivedPacketsValues, save_path)
+    print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
 
-print_graph_TM("Covered("+order_by+")",coveredValues, save_path)
+    print_graph_TM("ReceivedPackets("+order_by+")",receivedPacketsValues, save_path)
 
-print_graph_TM("SimulationTime("+order_by+")",simTimeValues, save_path)
+    print_graph_TM("Covered("+order_by+")",coveredValues, save_path)
 
-print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
+    print_graph_TM("SimulationTime("+order_by+")",simTimeValues, save_path)
 
-print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)
+    print_graph_TM("SendMessage("+order_by+")",sendMessageValues, save_path)
 
-#Stampo ordinando per t
-order_by = "t"
+    #print_graph_TM("Neighbors("+order_by+")",neighborsValues, save_path)
 
-print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
+    print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
 
-print_graph_TM("ReceivedPackets("+order_by+")",receivedPacketsValues, save_path)
+    print_graph_TM_ratio("CollisionOverSendMessage(" + order_by + ")", collisionValues, sendMessageValues, save_path)
 
-print_graph_TM("Covered("+order_by+")",coveredValues, save_path)
-
-print_graph_TM("SimulationTime("+order_by+")",simTimeValues, save_path)
-
-print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
-
-print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)
-
-
+    print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)

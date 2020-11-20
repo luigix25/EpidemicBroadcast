@@ -244,7 +244,7 @@ void User::finish(){
     recordScalar("#Collision", this->collisions);
     recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
 
-    if( this->receivedPacketsInTSlots >= this->m || this->sendInitialMessage){
+    if((this->currentStatus == DONE && this->receivedPacketsInTSlots < this->m) || this->sendInitialMessage){
         recordScalar("#SendMessage", 1);
     } else{
         recordScalar("#SendMessage", 0);

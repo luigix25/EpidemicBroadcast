@@ -224,6 +224,7 @@ void User::handleSelfMessage(cMessage *msg){
             } else {
                 EV<<"Broadcast suppressed"<<endl;
                 delete msg;
+                this->currentStatus = DONE;
 
             }
 
@@ -256,6 +257,8 @@ void User::finish(){
     } else{
         recordScalar("#Covered", 0);
     }
+
+    EV<<"STATUS: "<<this->currentStatus<<endl;
 
     int neighborsCount = 0;
     for (int i = 0; i < this->nNeighbours; i++)

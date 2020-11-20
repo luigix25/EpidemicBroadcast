@@ -149,6 +149,7 @@ void User::handleMessage(cMessage *msg)
 void User::broadcastMessage(cMessage *msg){
 
     EV<<"Broadcasting"<<endl;
+    this->didSend = true;
     for (int i = 0; i < this->nNeighbours; i++)
     {
         //No Self Msg
@@ -244,7 +245,7 @@ void User::finish(){
     recordScalar("#Collision", this->collisions);
     recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
 
-    if((this->currentStatus == DONE && this->receivedPacketsInTSlots < this->m) || this->sendInitialMessage){
+    if(this->didSend){
         recordScalar("#SendMessage", 1);
     } else{
         recordScalar("#SendMessage", 0);
@@ -255,6 +256,16 @@ void User::finish(){
     } else{
         recordScalar("#Covered", 0);
     }
+
+    int neighborsCount = 0;
+    for (int i = 0; i < this->nNeighbours; i++)
+    {
+        if(this->neighbours[i] == this || !this->isInTxRadius(this->neighbours[i]))
+            continue;
+        neighborsCount++;
+    }
+
+    recordScalar("#Neighbors", neighborsCount);
 
 
     //emit(packetCountSignal,this->receivedPackets);

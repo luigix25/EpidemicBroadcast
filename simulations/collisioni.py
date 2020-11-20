@@ -156,12 +156,12 @@ for file in files:
 
             elif (rowFile['name'][i] == '#SendMessage'):
                 sendMessageValuesTmp.append(rowFile['value'][i])
-            '''
+
             elif (rowFile['name'][i] == '#Neighbors'):
                 if not custom_key in neighborsValues:
                     neighborsValues[custom_key] = []
                 neighborsValues[custom_key].append(rowFile['value'][i])
-            '''
+
         #Fine File
         #Dopo ogni file aggiungo la statistica dei boolean
         sumCovered = 0
@@ -203,10 +203,12 @@ for order in order_key:
 
     print_graph_TM("SendMessage("+order_by+")",sendMessageValues, save_path)
 
-    #print_graph_TM("Neighbors("+order_by+")",neighborsValues, save_path)
+    print_graph_TM("Neighbors("+order_by+")",neighborsValues, save_path)
 
     print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
 
-    print_graph_TM_ratio("CollisionOverSendMessage(" + order_by + ")", collisionValues, sendMessageValues, save_path)
+    #print_graph_TM_ratio("CollisionOverSendMessage(" + order_by + ")", collisionValues, sendMessageValues, save_path)
 
-    print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)
+    print_graph_TM_ratio("SendMessageOverCovered(" + order_by + ")", sendMessageValues, coveredValues, save_path)
+
+    #print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)

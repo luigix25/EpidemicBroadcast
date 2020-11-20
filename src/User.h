@@ -65,7 +65,7 @@ class User : public cSimpleModule
         //Neighbours
         User ** neighbours;
         int nNeighbours;
-
+        bool didSend = false;
         //Signals Simulation
 
         //simsignal_t packetCountSignal;

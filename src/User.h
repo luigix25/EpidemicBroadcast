@@ -44,6 +44,10 @@ class User : public cSimpleModule
         //Time when last message is received
         simtime_t lastMessageTime = -1;
 
+        //Time when first message is received
+        simtime_t firstMessageTime = -1;
+
+
         //Current Status of the Node
         status currentStatus;
 

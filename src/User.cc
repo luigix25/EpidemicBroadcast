@@ -122,6 +122,10 @@ void User::handleMessage(cMessage *msg)
             this->currentStatus = SCHEDULING;
             EV<<"Status from waiting to scheduling"<<endl;
 
+            //This is necessary in order to compute the convergence time.
+            this->firstMessageTime = simTime();
+
+
             break;
 
         case SCHEDULING:
@@ -184,6 +188,9 @@ void User::handleCollision(){
 
             this->currentStatus = WAITING;
 
+            //A collision occured on the first message.
+            this->firstMessageTime = -1;
+
             break;
 
         case LISTENING:
@@ -239,8 +246,8 @@ void User::finish(){
     EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
     //SimTime recorded just once by the Initiator, for simplicity
-    if (this->sendInitialMessage)
-        recordScalar("#SimTime[ms]", simTime() * ONE_SECOND + this->slotSize);
+    //if (this->sendInitialMessage)
+    recordScalar("#FirstMessageTime[slot]", this->firstMessageTime * ONE_SECOND / this->slotSize);
 
     recordScalar("#PacketCount", this->receivedPackets);
     recordScalar("#Collision", this->collisions);

@@ -113,20 +113,22 @@ def print_graph_TM_ratio(title, values_numerator, values_denominator, path):
     #End print_graph_TM_ratio(title, values)
 
 
-collisionValues = {}
-receivedPacketsValues = {}
-coveredValues = {}
-simTimeValues = {}
-sendMessageValues = {}
-neighborsValues = {}
+collisionValues         = {}
+receivedPacketsValues   = {}
+coveredValues           = {}
+simTimeValues           = {}
+sendMessageValues       = {}
+neighborsValues         = {}
 
 files = os.listdir(path)
 #scorro tutti i file e mi salvo nella hashmap key(radius)-vector(values) tutti i valori 
 
 for file in files:
     if file.endswith(".csv"):
-        coveredValuesTmp = []
-        sendMessageValuesTmp = []
+        coveredValuesTmp        = []
+        sendMessageValuesTmp    = []
+        simTimeValuesTmp        = []
+
         rowFile = pd.read_csv(os.path.join(path,file))
         header = extractHeader(rowFile)
         custom_key = "t:"+header['T']+"-"+"m:"+header['m']
@@ -149,10 +151,8 @@ for file in files:
             elif(rowFile['name'][i] == '#Covered'):
                 coveredValuesTmp.append(rowFile['value'][i])
 
-            elif (rowFile['name'][i] == '#SimTime[ms]'):
-                if not custom_key in simTimeValues:
-                    simTimeValues[custom_key] = []
-                simTimeValues[custom_key].append(rowFile['value'][i])
+            elif (rowFile['name'][i] == '#FirstMessageTime[slot]'):
+                simTimeValuesTmp.append(rowFile['value'][i])
 
             elif (rowFile['name'][i] == '#SendMessage'):
                 sendMessageValuesTmp.append(rowFile['value'][i])
@@ -179,6 +179,12 @@ for file in files:
             sendMessageValues[custom_key] = []
         sendMessageValues[custom_key].append(sumSendMessage)
 
+        if not custom_key in simTimeValues:
+            simTimeValues[custom_key] = []
+        simTimeValues[custom_key].append(np.max(simTimeValuesTmp))
+
+
+
 #Genero il nome della cartella e la creo
 folderTitle = "Radius(" + header['R'] + ")_Redrop(" + header['redrop'] + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")"
 save_path = os.path.join("graph",folderTitle)
@@ -195,11 +201,11 @@ for order in order_key:
 
     print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
 
-    print_graph_TM("ReceivedPackets("+order_by+")",receivedPacketsValues, save_path)
+    print_graph_TM("ReceivedPacketsInTSlot("+order_by+")",receivedPacketsValues, save_path)
 
     print_graph_TM("Covered("+order_by+")",coveredValues, save_path)
 
-    print_graph_TM("SimulationTime("+order_by+")",simTimeValues, save_path)
+    print_graph_TM("SimulationTimeSlot("+order_by+")",simTimeValues, save_path)
 
     print_graph_TM("SendMessage("+order_by+")",sendMessageValues, save_path)
 

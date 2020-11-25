@@ -14,7 +14,7 @@ def extractHeader(rowFile):
     for i in range(0,50):           #hardcoded, but enough room for other attributes 
         if rowFile['type'][i] != "param":
             continue
-
+	
         name = rowFile['attrname'][i]
         name = name.replace("**.","")
         name = name.replace("EpidemicBroadcast.","")
@@ -56,8 +56,8 @@ def print_graph(values, filename):
 
     plt.figure(figsize=(20, 10))
 
-    plt.xticks(np.arange(minKey, maxKey+1, step=1), rotation=90)
-    plt.yticks(np.arange(0, 100+1, step=5))
+    #plt.xticks(np.arange(minKey, maxKey+1, step=1), rotation=90)
+    #plt.yticks(np.arange(0, 100+1, step=5))
 
     plt.errorbar(x, y, color='black', yerr=ci, fmt='o', ecolor='red', elinewidth=3, capsize=0)
 
@@ -68,11 +68,12 @@ def print_graph(values, filename):
     plt.grid(True)
     plt.scatter(x, y)
     plt.savefig(filename)
-    #End print_graph_TM(title, values)
+    #End print_graph(title, values)
 
 
-radiusValues         = {}
-
+radiusValues        = {}
+neighborsValues		= {}
+header 				= {}
 files = os.listdir(path)
 #scorro tutti i file e mi salvo nella hashmap key(radius)-vector(values) tutti i valori 
 
@@ -96,15 +97,23 @@ for file in files:
                     radiusValues[custom_key] = []
                 radiusValues[custom_key].append(rowFile['value'][i])
                 
-                # Un valore per file
-                break
+            elif (rowFile['name'][i] == '#Neighbors'):
+                if not custom_key in neighborsValues:
+                    neighborsValues[custom_key] = []
+                neighborsValues[custom_key].append(rowFile['value'][i])
 
         #Fine File
 #Fine Lettura File
 
 #Genero il nome della cartella e la creo
-fileTitle = "Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ").png"
+fileTitle = "Unlinked__Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ").png"
 save_path = os.path.join("graph","RadiusAnalysis")
 save_path = os.path.join(save_path,fileTitle)
 
 print_graph(radiusValues, save_path)
+
+fileTitle = "Neighbors__Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")_Redrop(" + header['redrop'] + ").png"
+save_path = os.path.join("graph","RadiusAnalysis")
+save_path = os.path.join(save_path,fileTitle)
+
+print_graph(neighborsValues, save_path)

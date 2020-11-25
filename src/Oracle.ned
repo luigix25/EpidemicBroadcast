@@ -27,6 +27,9 @@ simple Oracle{
 		
 		int RNGPosition						= default(1);
 		
+		int distributionType				= default(0);			//0 for uniform 1 for normal
+		double mean							= default(0);			//mean for normal
+		double stdDev						= default(1);			//std dev
 		
 		@display("");    
 	

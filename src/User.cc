@@ -26,8 +26,37 @@ void User::initialize(int stage)
 
         gate("radioIn")->setDeliverOnReceptionStart(true);
 
-        this->posX = par("posX").doubleValue();
-        this->posY = par("posY").doubleValue();
+        int distributionType = par("distributionType").intValue();
+        int RNGPosition = par("RNGPosition").intValue();
+
+
+
+        if(distributionType == 0){              //Uniform
+
+            int XLimit = par("XLimit").intValue();
+            int YLimit = par("YLimit").intValue();
+
+            this->posX = uniform (0, XLimit, RNGPosition);
+            this->posY = uniform (0, YLimit, RNGPosition);
+
+        } else if(distributionType == 1){       //Normal
+
+            double mean = par("mean").doubleValue();
+            double stdDev = par("stdDev").doubleValue();
+
+            this->posX = normal (mean, stdDev, RNGPosition);
+            this->posY = normal (mean, stdDev, RNGPosition);
+
+        }
+
+
+        //this->posX = par("posX").doubleValue();
+        //this->posY = par("posY").doubleValue();
+
+        cDisplayString& dispStr = this->getDisplayString();
+        dispStr.setTagArg("p", 0, this->posX);
+        dispStr.setTagArg("p", 1, this->posY);
+
 
         this->nNeighbours = par("nNeighbours").intValue();
 

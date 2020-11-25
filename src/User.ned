@@ -38,10 +38,18 @@ simple User
     	int nNeighbours;
             	
 		int slotSize @unit(milliseconds)	= default(1000ms);
-				
-		double posX = default(uniform (0, XLimit, RNGPosition));
-		double posY = default(uniform (0, YLimit, RNGPosition));    		
-		@display("p=$posX,$posY;r=$R");    
+		
+		int distributionType				= default(0);			//0 for uniform 1 for normal
+		double mean							= default(0);			//mean for normal
+		double stdDev						= default(1);			//std dev
+		
+		
+		
+		//double posX = default(uniform (0, XLimit, RNGPosition));
+		//double posY = default(uniform (0, YLimit, RNGPosition));
+		
+						
+		@display("p=0,0;r=$R");    
 		
 		//@signal[packets](source="packets";type=int);
 		//@statistic[packets](title="packets";record=mean,max,count,sum);	

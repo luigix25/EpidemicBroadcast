@@ -89,6 +89,7 @@ namespace epidemicbroadcast {
             }
 
             if(!this->redrop){
+                EV<<"no redrop"<<endl;
                 return;
             }
 

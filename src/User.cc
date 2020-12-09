@@ -50,8 +50,9 @@ void User::initialize(int stage)
         }
 
 
-        //this->posX = par("posX").doubleValue();
-        //this->posY = par("posY").doubleValue();
+        EV<<"POSX: "<<this->posX<<endl;
+        EV<<"POSY: "<<this->posY<<endl;
+
 
         cDisplayString& dispStr = this->getDisplayString();
         dispStr.setTagArg("p", 0, this->posX);
@@ -113,12 +114,12 @@ void User::handleMessage(cMessage *msg)
         return;
     }
 
-    EV << "Received a frame at "<< simTime() << endl;
-
     if(msg->isSelfMessage()){
         handleSelfMessage(msg);
         return;
     }
+
+    EV << "Received a frame at "<< simTime() << endl;
 
     simtime_t currentTime = simTime();
 
@@ -131,6 +132,9 @@ void User::handleMessage(cMessage *msg)
     }
 
     //No collision, slot is changed since last time!
+
+    EV<<"No COLLISION"<<endl;
+
     this->collided = false;
     this->receivedPackets++;
     //emit(packetCountSignal,this->receivedPackets);
@@ -190,7 +194,7 @@ void User::broadcastMessage(cMessage *msg){
             continue;
         cMessage *duplicate = msg->dup();
         sendDirect(duplicate,this->neighbours[i]->gate("radioIn"));
-        EV<<"Sending Message"<<endl;
+        EV<<"Sending Message "<<simTime()<<endl;
     }
 
 

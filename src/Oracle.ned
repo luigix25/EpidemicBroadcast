@@ -31,7 +31,6 @@ simple Oracle{
 		double mean							= default(0);			//mean for normal
 		double stdDev						= default(1);			//std dev
 		
-		@display("");    
-	
+		@display("p=0,0");
 
 }

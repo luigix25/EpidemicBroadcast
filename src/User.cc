@@ -255,7 +255,7 @@ void User::handleSelfMessage(cMessage *msg){
             if(this->receivedPacketsInTSlots < this->m){
 
                 //-1 altrimenti mando in T slot, ma ascolto in T-1
-                simtime_t delayTime = this->slotSize * intuniform(0, this->T-1,this->RNGBackoff) / ONE_SECOND;
+                simtime_t delayTime = 0;//this->slotSize * intuniform(0, this->T-1,this->RNGBackoff) / ONE_SECOND;
                 EV<<"DELAY TIME: ";
                 EV<<delayTime<<endl;
                 this->currentStatus = WAITING_FOR_SEND;
@@ -293,8 +293,10 @@ void User::finish(){
     }
 
     if( this->currentStatus == DONE){
+        EV<<"Covered"<<endl;
         recordScalar("#Covered", 1);
     } else{
+        EV<<"Not Covered"<<endl;
         recordScalar("#Covered", 0);
     }
 

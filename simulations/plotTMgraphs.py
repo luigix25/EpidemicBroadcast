@@ -55,7 +55,7 @@ def orderkey(list):
     return keyOrdered
     #End orderkey(list)
 
-def print_graph_TM(title, values, path):
+def print_graph_TM(title, values, path, pasquale=False):
     mean_values = {}
     ci_values = {}
     for key in values.keys():
@@ -81,6 +81,10 @@ def print_graph_TM(title, values, path):
     plt.xticks(range(len(x)), x, size='small')
     plt.grid(True)
     plt.scatter(x, y)
+
+    if pasquale:
+        plt.ylim(pasquale)
+
     plt.savefig(os.path.join(path, title +".png"))
     #End print_graph_TM(title, values)
 

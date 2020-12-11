@@ -31,8 +31,29 @@ namespace epidemicbroadcast {
         this->neighbours = new User*[this->nNeighbours];
         this->totalNumberOfRedrops = 0;
 
+
+        int riga = 0;
         for(int i=0;i<this->nNeighbours;i++){
+
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
+
+            /*
+            this->neighbours[i]->posX = this->R * (i % 10);   //uniform (0, XLimit, RNGPosition);
+            //this->neighbours[i]->posY = floor(this->R * i / 4) ;             //uniform (0, YLimit, RNGPosition);
+
+            this->neighbours[i]->posY = riga;
+
+            if(this->neighbours[i]->posX == this->R * 9){
+                riga += this->R;
+            }
+
+
+
+            cDisplayString& dispStr = this->neighbours[i]->getDisplayString();
+            dispStr.setTagArg("p", 0, this->neighbours[i]->posX);
+            dispStr.setTagArg("p", 1, this->neighbours[i]->posY);
+            */
+
         }
 
         this->neighbours[0]->sendInitialMessage = true;

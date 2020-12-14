@@ -22,7 +22,7 @@ def extractHeader(rowFile):
         names[name] = rowFile['attrvalue'][i]
     return names
 
-def print_graph(values, filename):
+def print_graph(values, filename, yname):
     mean_values = {}
     ci_values = {}
 
@@ -59,11 +59,14 @@ def print_graph(values, filename):
     #plt.xticks(np.arange(minKey, maxKey+1, step=1), rotation=90)
     #plt.yticks(np.arange(0, 100+1, step=5))
 
+    plt.xticks(np.arange(0, 500+60, step=1), rotation=90)
+    plt.yticks(np.arange(0, 100+1, step=5))
+
     plt.errorbar(x, y, color='black', yerr=ci, fmt='o', ecolor='red', elinewidth=3, capsize=0)
 
     plt.title("Radius Analysis")
     plt.xlabel("Radius")
-    plt.ylabel("Avg unlinked")
+    plt.ylabel(yname)
 
     plt.grid(True)
     plt.scatter(x, y)
@@ -110,10 +113,10 @@ fileTitle = "Unlinked__Repetition(" + header['numberRepetition'] + ")_CL(" + str
 save_path = os.path.join("graph","RadiusAnalysis")
 save_path = os.path.join(save_path,fileTitle)
 
-print_graph(radiusValues, save_path)
+print_graph(radiusValues, save_path, "Avg Unlinked")
 
 fileTitle = "Neighbors__Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")_Redrop(" + header['redrop'] + ").png"
 save_path = os.path.join("graph","RadiusAnalysis")
 save_path = os.path.join(save_path,fileTitle)
 
-print_graph(neighborsValues, save_path)
+print_graph(neighborsValues, save_path, "Avg Neighbors per User")

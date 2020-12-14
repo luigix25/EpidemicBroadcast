@@ -199,7 +199,7 @@ void User::broadcastMessage(cMessage *msg){
 void User::handleCollision(){
 
     //Collision Already Handled or antenna is switched off
-    if(this->collided || this->currentStatus == DONE)
+    if(this->collided || this->currentStatus == WAITING_FOR_SEND || this->currentStatus == DONE)
         return;
 
     this->collided = true;

@@ -113,7 +113,8 @@ def print_graph_TM_ratio(title, values_numerator, values_denominator, path):
     #End print_graph_TM_ratio(title, values)
 
 
-collisionValues         = {}
+collisionTValues        = {}
+collisionFValues        = {}
 receivedPacketsValues   = {}
 coveredValues           = {}
 simTimeValues           = {}
@@ -138,10 +139,15 @@ for file in files:
                 continue
 
             #print(rowFile['value'][i])
-            if(rowFile['name'][i] == '#Collision'):
-                if not custom_key in collisionValues:
-                    collisionValues[custom_key] = []
-                collisionValues[custom_key].append(rowFile['value'][i])
+            if(rowFile['name'][i] == '#TrickleCollision'):
+                if not custom_key in collisionTValues:
+                    collisionTValues[custom_key] = []
+                collisionTValues[custom_key].append(rowFile['value'][i])
+
+            elif(rowFile['name'][i] == '#FullCollision'):
+                if not custom_key in collisionFValues:
+                    collisionFValues[custom_key] = []
+                collisionFValues[custom_key].append(rowFile['value'][i])
 
             elif(rowFile['name'][i] == '#ReceivePacketInTSlots'):
                 if not custom_key in receivedPacketsValues:
@@ -184,9 +190,13 @@ for file in files:
         simTimeValues[custom_key].append(np.max(simTimeValuesTmp))
 
 
+distribution = "normal"
+if(header["distributionType"] == 1){
+	distribution = "gaussian"
+}
 
 #Genero il nome della cartella e la creo
-folderTitle = "Radius(" + header['R'] + ")_Redrop(" + header['redrop'] + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")"
+folderTitle = "Radius(" + header['R'] + ")_Redrop(" + header['redrop'] + ")_Distribution(" + distribution + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")"
 save_path = os.path.join("graph",folderTitle)
 #Se la cartella esiste già la rimuovo prima
 if os.path.exists(save_path):
@@ -199,7 +209,9 @@ order_key = ["t","m"]
 for order in order_key:
     order_by = order
 
-    print_graph_TM("Collision("+order_by+")",collisionValues, save_path)
+    print_graph_TM("TrickleCollision("+order_by+")",collisionTValues, save_path)
+
+    print_graph_TM("FullCollision("+order_by+")",collisionFValues, save_path)
 
     print_graph_TM("ReceivedPacketsInTSlot("+order_by+")",receivedPacketsValues, save_path)
 
@@ -211,10 +223,12 @@ for order in order_key:
 
     print_graph_TM("Neighbors("+order_by+")",neighborsValues, save_path)
 
-    print_graph_TM_ratio("CollisionOverCovered("+order_by+")", collisionValues, coveredValues, save_path)
+    print_graph_TM_ratio("TrickleCollisionOverCovered("+order_by+")", collisionTValues, coveredValues, save_path)   
 
-    #print_graph_TM_ratio("CollisionOverSendMessage(" + order_by + ")", collisionValues, sendMessageValues, save_path)
+    print_graph_TM_ratio("FullCollisionOverCovered("+order_by+")", collisionFValues, coveredValues, save_path)   
 
     print_graph_TM_ratio("SendMessageOverCovered(" + order_by + ")", sendMessageValues, coveredValues, save_path)
+
+     #print_graph_TM_ratio("CollisionOverSendMessage(" + order_by + ")", collisionValues, sendMessageValues, save_path)
 
     #print_graph_TM_ratio("SimulationTimeOverCovered("+order_by+")", simTimeValues, coveredValues, save_path)

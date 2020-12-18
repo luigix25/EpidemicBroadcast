@@ -108,10 +108,10 @@ void User::handleMessage(cMessage *msg)
 {
 
     // When status is done antenna is switched off
-    if(this->currentStatus == DONE){
+   /* if(this->currentStatus == DONE){
         delete msg;
         return;
-    }
+    }*/
 
     EV << "Received a frame at "<< simTime() << endl;
 
@@ -133,6 +133,8 @@ void User::handleMessage(cMessage *msg)
     //No collision, slot is changed since last time!
     this->collided = false;
     this->receivedPackets++;
+    this->lastMessageTime = currentTime;
+
     //emit(packetCountSignal,this->receivedPackets);
 
     simtime_t delayTime;
@@ -165,15 +167,12 @@ void User::handleMessage(cMessage *msg)
             this->receivedPacketsInTSlots++;
             break;
 
-
-/*
-//TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
-        case DONE:
+        /* Waiting for Send and Done */
+        default: //TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
             break;
-*/
+
     }
 
-    this->lastMessageTime = currentTime;
 
     delete msg;
 
@@ -199,12 +198,19 @@ void User::broadcastMessage(cMessage *msg){
 void User::handleCollision(){
 
     //Collision Already Handled or antenna is switched off
-    if(this->collided || this->currentStatus == WAITING_FOR_SEND || this->currentStatus == DONE)
+    if(this->collided)
         return;
 
     this->collided = true;
-    this->collisions++;
+    this->fullCollisions++;
+
     this->receivedPackets--;
+
+
+
+    if(this->currentStatus != WAITING_FOR_SEND && this->currentStatus != DONE){
+        this->trickleCollisions++;
+    }
 
     //Message received was not valid
 
@@ -272,14 +278,16 @@ void User::handleSelfMessage(cMessage *msg){
 }
 
 void User::finish(){
-    EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
+    EV<<"Full Collisions: "<<this->fullCollisions<<" "<<"Trickle Collisions: "<<this->trickleCollisions<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
     //SimTime recorded just once by the Initiator, for simplicity
     //if (this->sendInitialMessage)
     recordScalar("#FirstMessageTime[slot]", this->firstMessageTime * ONE_SECOND / this->slotSize);
 
     recordScalar("#PacketCount", this->receivedPackets);
-    recordScalar("#Collision", this->collisions);
+    recordScalar("#TrickleCollision", this->trickleCollisions);
+    recordScalar("#FullCollision", this->fullCollisions);
+
     recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
 
     if(this->didSend){

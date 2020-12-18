@@ -35,6 +35,10 @@ namespace epidemicbroadcast {
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
         }
 
+        cDisplayString& dispStr = this->getDisplayString();
+        dispStr.setTagArg("p", 0, this->neighbours[0]->posX);
+        dispStr.setTagArg("p", 1, this->neighbours[0]->posY);
+
         this->neighbours[0]->sendInitialMessage = true;
 
         //if(redrop)

@@ -87,7 +87,8 @@ class User : public cSimpleModule
     protected:
 
         //Total number of collisions
-        unsigned short collisions      = 0;
+        unsigned short trickleCollisions      = 0;
+        unsigned short fullCollisions      = 0;
 
         //Number of packets received in T time slots
         unsigned short receivedPacketsInTSlots  = 0;

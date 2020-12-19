@@ -50,8 +50,8 @@ namespace epidemicbroadcast {
         recordScalar("#unlinkedNodes", this->unlinkedNodes);
         //recordScalar("#totalNumberOfRedrops", this->totalNumberOfRedrops);
 
-        EV<<"Unlinked: "<<this->unlinkedNodes<<endl;
-        EV<<"totalNumberOfRedrops: "<<this->totalNumberOfRedrops<<endl;
+        //EV<<"Unlinked: "<<this->unlinkedNodes<<endl;
+        //EV<<"totalNumberOfRedrops: "<<this->totalNumberOfRedrops<<endl;
 
     }
 

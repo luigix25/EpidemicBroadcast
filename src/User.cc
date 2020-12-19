@@ -278,7 +278,7 @@ void User::handleSelfMessage(cMessage *msg){
 }
 
 void User::finish(){
-    EV<<"Full Collisions: "<<this->fullCollisions<<" "<<"Trickle Collisions: "<<this->trickleCollisions<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
+    //EV<<"Full Collisions: "<<this->fullCollisions<<" "<<"Trickle Collisions: "<<this->trickleCollisions<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
     //SimTime recorded just once by the Initiator, for simplicity
     //if (this->sendInitialMessage)
@@ -302,7 +302,7 @@ void User::finish(){
         recordScalar("#Covered", 0);
     }
 
-    EV<<"STATUS: "<<this->currentStatus<<endl;
+   // EV<<"STATUS: "<<this->currentStatus<<endl;
 
     int neighborsCount = 0;
     for (int i = 0; i < this->nNeighbours; i++)

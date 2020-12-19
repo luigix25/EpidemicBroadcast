@@ -59,7 +59,7 @@ def print_graph(values, filename, yname):
     #plt.xticks(np.arange(minKey, maxKey+1, step=1), rotation=90)
     #plt.yticks(np.arange(0, 100+1, step=5))
 
-    plt.xticks(np.arange(0, 500+60, step=1), rotation=90)
+    plt.xticks(np.arange(0, 1000+60, step=1), rotation=90)
     plt.yticks(np.arange(0, 100+1, step=5))
 
     plt.errorbar(x, y, color='black', yerr=ci, fmt='o', ecolor='red', elinewidth=3, capsize=0)
@@ -109,13 +109,17 @@ for file in files:
 #Fine Lettura File
 
 #Genero il nome della cartella e la creo
-fileTitle = "Unlinked__Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ").png"
+distribution = "uniform"
+if header['distributionType'] == '1':
+	distribution = "gaussian"
+
+fileTitle = "Unlinked___Distribution(" + distribution + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ").png"
 save_path = os.path.join("graph","RadiusAnalysis")
 save_path = os.path.join(save_path,fileTitle)
 
-print_graph(radiusValues, save_path, "Avg Unlinked")
+#print_graph(radiusValues, save_path, "Avg Users Unlinked")
 
-fileTitle = "Neighbors__Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")_Redrop(" + header['redrop'] + ").png"
+fileTitle = "Neighbours___Distribution(" + distribution + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")_Redrop(" + header['redrop'] + ").png"
 save_path = os.path.join("graph","RadiusAnalysis")
 save_path = os.path.join(save_path,fileTitle)
 

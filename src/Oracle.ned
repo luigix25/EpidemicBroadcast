@@ -20,11 +20,11 @@ simple Oracle{
     parameters:
 		int nNeighbours;
 		int R;
-		int XLimit;
-		int YLimit;
+		int XLimit							= default(2000);
+		int YLimit							= default(2000);
 		
-		bool redrop = default(false);
-		bool radiusAnalysis = default(false);
+		bool redrop 						= default(false);
+		bool radiusAnalysis 				= default(false);
 		
 		int RNGPosition						= default(1);
 		

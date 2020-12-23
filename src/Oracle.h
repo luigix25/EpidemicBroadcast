@@ -34,6 +34,7 @@ class Oracle : public cSimpleModule{
 
         int R;
         int XLimit, YLimit;
+        int distributionType;
         bool redrop;
         bool radiusAnalysis;
 
@@ -49,7 +50,7 @@ class Oracle : public cSimpleModule{
         void redropUser(User*);
         bool isInTxRadius(User *, User *);
         bool checkNewConnections(User*,unordered_set<User*>&);
-
+        void gridTopology();
 
     public:
         virtual void initialize();

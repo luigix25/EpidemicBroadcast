@@ -27,6 +27,7 @@ namespace epidemicbroadcast {
         this->R             = par("R").intValue();
         this->redrop        = par("redrop").boolValue();
         this->radiusAnalysis = par("radiusAnalysis").boolValue();
+        this->distributionType = par("distributionType").intValue();
 
         this->RNGPosition   = par("RNGPosition").intValue();
 
@@ -35,8 +36,11 @@ namespace epidemicbroadcast {
 
         for(int i=0;i<this->nNeighbours;i++){
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
+
         }
 
+        if(this->distributionType == 2)
+            gridTopology();
 
         //Just an optimization, if i just need neighbors no need to execute the entire simulation
         if(this->radiusAnalysis == false){
@@ -44,6 +48,30 @@ namespace epidemicbroadcast {
         }
 
         marking();
+
+    }
+
+    void Oracle::gridTopology(){
+
+        int row = 0;
+
+        int element_per_row = 10;
+
+        for(int i=0;i<this->nNeighbours;i++){
+
+            this->neighbours[i]->posX = this->R * (i % element_per_row);
+
+            this->neighbours[i]->posY = row;
+
+            if(this->neighbours[i]->posX == this->R * (element_per_row-1)){
+                row += this->R;
+            }
+
+
+            cDisplayString& dispStr = this->neighbours[i]->getDisplayString();
+            dispStr.setTagArg("p", 0, this->neighbours[i]->posX);
+            dispStr.setTagArg("p", 1, this->neighbours[i]->posY);
+        }
 
     }
 
@@ -131,13 +159,12 @@ namespace epidemicbroadcast {
     void Oracle::redropUser(User* user){
 
 
-        int distributionType = par("distributionType").intValue();
 
-        if(distributionType == 0){              //Uniform
+        if(this->distributionType == 0){              //Uniform
             user->posX = uniform (0, XLimit, RNGPosition);
             user->posY = uniform (0, YLimit, RNGPosition);
 
-        } else if(distributionType == 1){       //Normal
+        } else if(this->distributionType == 1){       //Normal
 
             double mean     = par("mean").doubleValue();
             double stdDev   = par("stdDev").doubleValue();

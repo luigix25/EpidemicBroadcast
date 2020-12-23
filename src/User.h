@@ -54,6 +54,8 @@ class User : public cSimpleModule
         //Collision did occur in a time slot
         bool collided                   = false;
 
+        bool noDelay;
+
         cMessage* scheduledMessage;
 
         //RNG to be used for Backoff computation
@@ -72,7 +74,6 @@ class User : public cSimpleModule
         bool didSend = false;
         //Signals Simulation
 
-        //simsignal_t packetCountSignal;
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);

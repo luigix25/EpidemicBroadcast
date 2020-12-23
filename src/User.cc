@@ -28,7 +28,7 @@ void User::initialize(int stage)
 
         int distributionType = par("distributionType").intValue();
         int RNGPosition = par("RNGPosition").intValue();
-
+        this->noDelay = par("noDelay").boolValue();
 
         if(distributionType == 0){              //Uniform
 
@@ -251,6 +251,10 @@ void User::handleSelfMessage(cMessage *msg){
 
                 //-1 altrimenti mando in T slot, ma ascolto in T-1
                 simtime_t delayTime = this->slotSize * intuniform(0, this->T-1,this->RNGBackoff) / ONE_SECOND;
+
+                if(this->noDelay)
+                    delayTime = 0;
+
                 EV<<"DELAY TIME: ";
                 EV<<delayTime<<endl;
                 this->currentStatus = WAITING_FOR_SEND;

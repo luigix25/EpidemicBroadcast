@@ -25,8 +25,8 @@ simple User
     parameters:
         //bool sendInitialMessage 			= default(false);
         
-        int m = default(1);
-        int T = default(1);
+        int m 								= default(1);
+        int T 								= default(1);
         int R;
                 
 		int RNGPosition						= default(1);
@@ -43,16 +43,10 @@ simple User
 		double mean							= default(0);			//mean for normal
 		double stdDev						= default(1);			//std dev
 		
-		
-		
-		//double posX = default(uniform (0, XLimit, RNGPosition));
-		//double posY = default(uniform (0, YLimit, RNGPosition));
-		
+		bool noDelay						= default(false);	
 						
 		@display("p=0,0;r=$R");    
-		
-		//@signal[packets](source="packets";type=int);
-		//@statistic[packets](title="packets";record=mean,max,count,sum);	
+
 				    
     gates:
     	input radioIn @directIn;

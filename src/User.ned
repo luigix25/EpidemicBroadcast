@@ -32,8 +32,8 @@ simple User
 		int RNGPosition						= default(1);
     	int RNGBackoff						= default(2);
     	
-    	int XLimit							= default(2000);					
-    	int YLimit							= default(2000);
+    	int XLimit							= default(4000);					
+    	int YLimit							= default(4000);
             	
     	int nNeighbours;
             	

@@ -35,13 +35,9 @@ namespace epidemicbroadcast {
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
         }
 
-        cDisplayString& dispStr = this->getDisplayString();
-        dispStr.setTagArg("p", 0, this->neighbours[0]->posX);
-        dispStr.setTagArg("p", 1, this->neighbours[0]->posY);
 
         this->neighbours[0]->sendInitialMessage = true;
 
-        //if(redrop)
         marking();
 
     }
@@ -135,6 +131,7 @@ namespace epidemicbroadcast {
         if(distributionType == 0){              //Uniform
             user->posX = uniform (0, XLimit, RNGPosition);
             user->posY = uniform (0, YLimit, RNGPosition);
+
         } else if(distributionType == 1){       //Normal
 
             double mean     = par("mean").doubleValue();
@@ -145,9 +142,6 @@ namespace epidemicbroadcast {
 
         }
 
-
-        //user->posX = uniform(0,this->XLimit,this->RNGPosition);
-        //user->posY = uniform(0,this->YLimit,this->RNGPosition);
         cDisplayString& dispStr = user->getDisplayString();
         dispStr.setTagArg("p", 0, user->posX);
         dispStr.setTagArg("p", 1, user->posY);

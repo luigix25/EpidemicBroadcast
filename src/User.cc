@@ -30,7 +30,6 @@ void User::initialize(int stage)
         int RNGPosition = par("RNGPosition").intValue();
 
 
-
         if(distributionType == 0){              //Uniform
 
             int XLimit = par("XLimit").intValue();
@@ -47,11 +46,8 @@ void User::initialize(int stage)
             this->posX = normal (mean, stdDev, RNGPosition);
             this->posY = normal (mean, stdDev, RNGPosition);
 
-        }
+        } // distribution type == 2 handled in the oracle
 
-
-        //this->posX = par("posX").doubleValue();
-        //this->posY = par("posY").doubleValue();
 
         cDisplayString& dispStr = this->getDisplayString();
         dispStr.setTagArg("p", 0, this->posX);
@@ -72,8 +68,6 @@ void User::initialize(int stage)
 
 
         this->currentStatus = WAITING;
-
-        //packetCountSignal = registerSignal("packets");
 
         return;
 
@@ -146,7 +140,6 @@ void User::handleMessage(cMessage *msg)
             //TODO: sistemareProb
 
             //ScheduleAt wants seconds and slotSize is in milliseconds
-            //delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / ONE_SECOND;
             delayTime = this->slotSize * this->T / ONE_SECOND;
 
             scheduleAt(currentTime + delayTime ,scheduledMessage);               //non posso schedulare nello stesso slot

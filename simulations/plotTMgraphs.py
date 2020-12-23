@@ -194,7 +194,7 @@ for file in files:
         simTimeValues[custom_key].append(np.max(simTimeValuesTmp))
 
 
-distribution = "normal"
+distribution = "uniform"
 if header['distributionType'] == '1':
 	distribution = "gaussian"
 

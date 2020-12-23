@@ -24,10 +24,11 @@ simple Oracle{
 		int YLimit;
 		
 		bool redrop = default(false);
+		bool radiusAnalysis = default(false);
 		
 		int RNGPosition						= default(1);
 		
-		int distributionType				= default(0);			//0 for uniform 1 for normal
+		int distributionType				= default(0);			//0 for uniform 1 for normal 2 for grid
 		double mean							= default(0);			//mean for normal
 		double stdDev						= default(1);			//std dev
 		

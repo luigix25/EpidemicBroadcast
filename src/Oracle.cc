@@ -26,6 +26,8 @@ namespace epidemicbroadcast {
         this->YLimit        = par("YLimit").intValue();
         this->R             = par("R").intValue();
         this->redrop        = par("redrop").boolValue();
+        this->radiusAnalysis = par("radiusAnalysis").boolValue();
+
         this->RNGPosition   = par("RNGPosition").intValue();
 
         this->neighbours = new User*[this->nNeighbours];
@@ -36,7 +38,10 @@ namespace epidemicbroadcast {
         }
 
 
-        this->neighbours[0]->sendInitialMessage = true;
+        //Just an optimization, if i just need neighbors no need to execute the entire simulation
+        if(this->radiusAnalysis == false){
+            this->neighbours[0]->sendInitialMessage = true;
+        }
 
         marking();
 

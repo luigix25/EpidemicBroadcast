@@ -35,6 +35,7 @@ class Oracle : public cSimpleModule{
         int R;
         int XLimit, YLimit;
         bool redrop;
+        bool radiusAnalysis;
 
         int RNGPosition;
 

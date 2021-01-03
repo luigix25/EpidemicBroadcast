@@ -26,8 +26,33 @@ void User::initialize(int stage)
 
         gate("radioIn")->setDeliverOnReceptionStart(true);
 
-        this->posX = par("posX").intValue();
-        this->posY = par("posY").intValue();
+        int distributionType = par("distributionType").intValue();
+        int RNGPosition = par("RNGPosition").intValue();
+        this->noDelay = par("noDelay").boolValue();
+
+        if(distributionType == 0){              //Uniform
+
+            int XLimit = par("XLimit").intValue();
+            int YLimit = par("YLimit").intValue();
+
+            this->posX = uniform (0, XLimit, RNGPosition);
+            this->posY = uniform (0, YLimit, RNGPosition);
+
+        } else if(distributionType == 1){       //Normal
+
+            double mean = par("mean").doubleValue();
+            double stdDev = par("stdDev").doubleValue();
+
+            this->posX = normal (mean, stdDev, RNGPosition);
+            this->posY = normal (mean, stdDev, RNGPosition);
+
+        } // distribution type == 2 handled in the oracle
+
+
+        cDisplayString& dispStr = this->getDisplayString();
+        dispStr.setTagArg("p", 0, this->posX);
+        dispStr.setTagArg("p", 1, this->posY);
+
 
         this->nNeighbours = par("nNeighbours").intValue();
 
@@ -43,8 +68,6 @@ void User::initialize(int stage)
 
 
         this->currentStatus = WAITING;
-
-        //packetCountSignal = registerSignal("packets");
 
         return;
 
@@ -79,10 +102,10 @@ void User::handleMessage(cMessage *msg)
 {
 
     // When status is done antenna is switched off
-    if(this->currentStatus == DONE){
+   /* if(this->currentStatus == DONE){
         delete msg;
         return;
-    }
+    }*/
 
     EV << "Received a frame at "<< simTime() << endl;
 
@@ -104,6 +127,8 @@ void User::handleMessage(cMessage *msg)
     //No collision, slot is changed since last time!
     this->collided = false;
     this->receivedPackets++;
+    this->lastMessageTime = currentTime;
+
     //emit(packetCountSignal,this->receivedPackets);
 
     simtime_t delayTime;
@@ -115,15 +140,15 @@ void User::handleMessage(cMessage *msg)
             //TODO: sistemareProb
 
             //ScheduleAt wants seconds and slotSize is in milliseconds
-            //delayTime = this->slotSize * intuniform(1, this->T,this->RNGBackoff) / ONE_SECOND;
             delayTime = this->slotSize * this->T / ONE_SECOND;
-
-            EV<<"DELAY TIME: ";
-            EV<<delayTime<<endl;
 
             scheduleAt(currentTime + delayTime ,scheduledMessage);               //non posso schedulare nello stesso slot
             this->currentStatus = SCHEDULING;
             EV<<"Status from waiting to scheduling"<<endl;
+
+            //This is necessary in order to compute the convergence time.
+            this->firstMessageTime = simTime();
+
 
             break;
 
@@ -134,14 +159,13 @@ void User::handleMessage(cMessage *msg)
         case LISTENING:
             this->receivedPacketsInTSlots++;
             break;
-/*
-//TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
-        case DONE:
+
+        /* Waiting for Send and Done */
+        default: //TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
             break;
-*/
+
     }
 
-    this->lastMessageTime = currentTime;
 
     delete msg;
 
@@ -150,6 +174,7 @@ void User::handleMessage(cMessage *msg)
 void User::broadcastMessage(cMessage *msg){
 
     EV<<"Broadcasting"<<endl;
+    this->didSend = true;
     for (int i = 0; i < this->nNeighbours; i++)
     {
         //No Self Msg
@@ -166,12 +191,19 @@ void User::broadcastMessage(cMessage *msg){
 void User::handleCollision(){
 
     //Collision Already Handled or antenna is switched off
-    if(this->collided || this->currentStatus == DONE)
+    if(this->collided)
         return;
 
     this->collided = true;
-    this->collisions++;
+    this->fullCollisions++;
+
     this->receivedPackets--;
+
+
+
+    if(this->currentStatus != WAITING_FOR_SEND && this->currentStatus != DONE){
+        this->trickleCollisions++;
+    }
 
     //Message received was not valid
 
@@ -183,6 +215,9 @@ void User::handleCollision(){
             EV<<"Status from SCHEDULING to WAITING"<<endl;
 
             this->currentStatus = WAITING;
+
+            //A collision occured on the first message.
+            this->firstMessageTime = -1;
 
             break;
 
@@ -199,35 +234,82 @@ void User::handleCollision(){
 
 void User::handleSelfMessage(cMessage *msg){
 
-    //No matter if i send or not, i do not have to do anything else.
-    this->currentStatus = DONE;
 
-    if(this->receivedPacketsInTSlots < this->m){
-        broadcastMessage(msg);
-    } else {
-        EV<<"Broadcast suppressed"<<endl;
+    switch(this->currentStatus){
+
+        case WAITING_FOR_SEND:
+            //No matter if i send or not, i do not have to do anything else.
+            this->currentStatus = DONE;
+            broadcastMessage(msg);
+            delete msg;
+
+            break;
+        case SCHEDULING:
+        case LISTENING:
+
+            if(this->receivedPacketsInTSlots < this->m){
+
+                //-1 altrimenti mando in T slot, ma ascolto in T-1
+                simtime_t delayTime = this->slotSize * intuniform(0, this->T-1,this->RNGBackoff) / ONE_SECOND;
+
+                if(this->noDelay)
+                    delayTime = 0;
+
+                EV<<"DELAY TIME: ";
+                EV<<delayTime<<endl;
+                this->currentStatus = WAITING_FOR_SEND;
+                scheduleAt(simTime() + delayTime ,msg);
+
+            } else {
+                EV<<"Broadcast suppressed"<<endl;
+                delete msg;
+                this->currentStatus = DONE;
+
+            }
+
+
     }
 
-    delete msg;
+
 
 }
 
 void User::finish(){
-    EV<<"Collisions: "<<this->collisions<<" "<<"Packets: "<<this->receivedPackets<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
+    //EV<<"Full Collisions: "<<this->fullCollisions<<" "<<"Trickle Collisions: "<<this->trickleCollisions<<" Packets in T Slots:"<<this->receivedPacketsInTSlots<<endl;
 
     //SimTime recorded just once by the Initiator, for simplicity
-    if (this->sendInitialMessage)
-        recordScalar("#SimTime[ms]", simTime() * ONE_SECOND + this->slotSize);
+    //if (this->sendInitialMessage)
+    recordScalar("#FirstMessageTime[slot]", this->firstMessageTime * ONE_SECOND / this->slotSize);
 
     recordScalar("#PacketCount", this->receivedPackets);
-    recordScalar("#Collision", this->collisions);
+    recordScalar("#TrickleCollision", this->trickleCollisions);
+    recordScalar("#FullCollision", this->fullCollisions);
+
     recordScalar("#ReceivePacketInTSlots", this->receivedPacketsInTSlots);
 
-    if( this->receivedPacketsInTSlots >= this->m || this->sendInitialMessage){
+    if(this->didSend){
         recordScalar("#SendMessage", 1);
     } else{
         recordScalar("#SendMessage", 0);
     }
+
+    if( this->currentStatus == DONE){
+        recordScalar("#Covered", 1);
+    } else{
+        recordScalar("#Covered", 0);
+    }
+
+   // EV<<"STATUS: "<<this->currentStatus<<endl;
+
+    int neighborsCount = 0;
+    for (int i = 0; i < this->nNeighbours; i++)
+    {
+        if(this->neighbours[i] == this || !this->isInTxRadius(this->neighbours[i]))
+            continue;
+        neighborsCount++;
+    }
+
+    recordScalar("#Neighbors", neighborsCount);
 
 
     //emit(packetCountSignal,this->receivedPackets);

@@ -26,6 +26,9 @@ namespace epidemicbroadcast {
         this->YLimit        = par("YLimit").intValue();
         this->R             = par("R").intValue();
         this->redrop        = par("redrop").boolValue();
+        this->radiusAnalysis = par("radiusAnalysis").boolValue();
+        this->distributionType = par("distributionType").intValue();
+
         this->RNGPosition   = par("RNGPosition").intValue();
 
         this->neighbours = new User*[this->nNeighbours];
@@ -33,12 +36,42 @@ namespace epidemicbroadcast {
 
         for(int i=0;i<this->nNeighbours;i++){
             this->neighbours[i] = (User*)getParentModule()->getSubmodule("node", i);
+
         }
 
-        this->neighbours[0]->sendInitialMessage = true;
+        if(this->distributionType == 2)
+            gridTopology();
 
-        //if(redrop)
+        //Just an optimization, if i just need neighbors no need to execute the entire simulation
+        if(this->radiusAnalysis == false){
+            this->neighbours[0]->sendInitialMessage = true;
+        }
+
         marking();
+
+    }
+
+    void Oracle::gridTopology(){
+
+        int row = 0;
+
+        int element_per_row = 10;
+
+        for(int i=0;i<this->nNeighbours;i++){
+
+            this->neighbours[i]->posX = this->R * (i % element_per_row);
+
+            this->neighbours[i]->posY = row;
+
+            if(this->neighbours[i]->posX == this->R * (element_per_row-1)){
+                row += this->R;
+            }
+
+
+            cDisplayString& dispStr = this->neighbours[i]->getDisplayString();
+            dispStr.setTagArg("p", 0, this->neighbours[i]->posX);
+            dispStr.setTagArg("p", 1, this->neighbours[i]->posY);
+        }
 
     }
 
@@ -46,8 +79,8 @@ namespace epidemicbroadcast {
         recordScalar("#unlinkedNodes", this->unlinkedNodes);
         //recordScalar("#totalNumberOfRedrops", this->totalNumberOfRedrops);
 
-        EV<<"Unlinked: "<<this->unlinkedNodes<<endl;
-        EV<<"totalNumberOfRedrops: "<<this->totalNumberOfRedrops<<endl;
+        //EV<<"Unlinked: "<<this->unlinkedNodes<<endl;
+        //EV<<"totalNumberOfRedrops: "<<this->totalNumberOfRedrops<<endl;
 
     }
 
@@ -103,55 +136,44 @@ namespace epidemicbroadcast {
 
             }
 
-            /*while(unchecked.size() != 0){
-                User* tmp = *(unchecked.begin());
-                unchecked.erase(tmp);
-                redropUser(tmp);
-            }*/
-            //checkNewConnections(tmp,checked,unchecked);
         }
 
 
-        //EV<<"CHECKED:"<<checked.size() << endl;
-        /*for(auto itr = checked.begin(); itr != checked.end(); itr++){
-            EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
-        }*/
-        //EV<<"UNCHECKED:"<<unchecked.size()<<endl;
-
-        /*for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
-            EV<<(*itr)->posX <<" : "<<(*itr)->posY<<endl;
-        }
-
-        EV << "Numero Redrop: " << count << endl;
-        EV << "Numero Redrop totali: " << count2 << endl;*/
 
     }
 
     void Oracle::checkNeighbours(User* user, queue<User*> &q,unordered_set<User*>& unchecked){
 
-        int myPosX = user->posX;
-        int myPosY = user->posY;
-        int otherPosX;
-        int otherPosY;
+        double myPosX = user->posX;
+        double myPosY = user->posY;
+        double otherPosX;
+        double otherPosY;
         for(auto itr = unchecked.begin(); itr != unchecked.end(); itr++){
 
             if(isInTxRadius(user,*itr))
                     q.push(*itr);
 
-            /*otherPosX = (*itr)->posX;
-            otherPosY = (*itr)->posY;
-
-           if(pow(myPosX - otherPosX,2) + pow(myPosY - otherPosY,2) <= pow(this->R,2)){
-               q.push(*itr);
-
-           }*/
-
         }
     }
 
     void Oracle::redropUser(User* user){
-        user->posX = intuniform(0,this->XLimit,this->RNGPosition);
-        user->posY = intuniform(0,this->YLimit,this->RNGPosition);
+
+
+
+        if(this->distributionType == 0){              //Uniform
+            user->posX = uniform (0, XLimit, RNGPosition);
+            user->posY = uniform (0, YLimit, RNGPosition);
+
+        } else if(this->distributionType == 1){       //Normal
+
+            double mean     = par("mean").doubleValue();
+            double stdDev   = par("stdDev").doubleValue();
+
+            user->posX = normal (mean, stdDev, RNGPosition);
+            user->posY = normal (mean, stdDev, RNGPosition);
+
+        }
+
         cDisplayString& dispStr = user->getDisplayString();
         dispStr.setTagArg("p", 0, user->posX);
         dispStr.setTagArg("p", 1, user->posY);

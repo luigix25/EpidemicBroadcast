@@ -22,6 +22,7 @@ src/RRcellNet_dbg
 
 # Directory
 out/
+results/
 
 # General
 tmp/

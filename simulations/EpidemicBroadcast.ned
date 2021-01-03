@@ -25,9 +25,6 @@ network EpidemicBroadcast
 
 	parameters:
 		int nUsers;
-
-		//Initiator
-		//node[0].sendInitialMessage 			= true;
 		
 		
     submodules:

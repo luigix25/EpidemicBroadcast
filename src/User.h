@@ -24,7 +24,7 @@ namespace epidemicbroadcast {
 
 #define ONE_SECOND 1000.0
 
-enum status{WAITING, SCHEDULING, LISTENING, DONE};
+enum status{WAITING, SCHEDULING, LISTENING, WAITING_FOR_SEND ,DONE};
 
 /**
  * Implements the Txc simple module. See the NED file for more information.
@@ -33,8 +33,8 @@ class User : public cSimpleModule
 {
 
     public:
-        int posX;
-        int posY;
+        double posX;
+        double posY;
 
 
         bool sendInitialMessage = false;
@@ -44,11 +44,17 @@ class User : public cSimpleModule
         //Time when last message is received
         simtime_t lastMessageTime = -1;
 
+        //Time when first message is received
+        simtime_t firstMessageTime = -1;
+
+
         //Current Status of the Node
         status currentStatus;
 
         //Collision did occur in a time slot
         bool collided                   = false;
+
+        bool noDelay;
 
         cMessage* scheduledMessage;
 
@@ -65,10 +71,9 @@ class User : public cSimpleModule
         //Neighbours
         User ** neighbours;
         int nNeighbours;
-
+        bool didSend = false;
         //Signals Simulation
 
-        //simsignal_t packetCountSignal;
 
         //Sends the message in broadcast
         void broadcastMessage(cMessage *msg);
@@ -83,7 +88,8 @@ class User : public cSimpleModule
     protected:
 
         //Total number of collisions
-        unsigned short collisions      = 0;
+        unsigned short trickleCollisions      = 0;
+        unsigned short fullCollisions      = 0;
 
         //Number of packets received in T time slots
         unsigned short receivedPacketsInTSlots  = 0;

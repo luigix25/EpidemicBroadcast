@@ -25,26 +25,28 @@ simple User
     parameters:
         //bool sendInitialMessage 			= default(false);
         
-        int m;
-        int T;
+        int m 								= default(1);
+        int T 								= default(1);
         int R;
                 
 		int RNGPosition						= default(1);
     	int RNGBackoff						= default(2);
     	
-    	int XLimit;					
-    	int YLimit;						
+    	int XLimit							= default(4000);					
+    	int YLimit							= default(4000);
             	
     	int nNeighbours;
             	
 		int slotSize @unit(milliseconds)	= default(1000ms);
-				
-		int posX = default(intuniform (0, XLimit, RNGPosition));
-		int posY = default(intuniform (0, YLimit, RNGPosition));    		
-		@display("p=$posX,$posY;r=$R");    
 		
-		//@signal[packets](source="packets";type=int);
-		//@statistic[packets](title="packets";record=mean,max,count,sum);	
+		int distributionType				= default(0);			//0 for uniform 1 for normal
+		double mean							= default(0);			//mean for normal
+		double stdDev						= default(1);			//std dev
+		
+		bool noDelay						= default(false);	
+						
+		@display("p=0,0;r=$R");    
+
 				    
     gates:
     	input radioIn @directIn;

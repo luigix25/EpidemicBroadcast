@@ -20,13 +20,17 @@ simple Oracle{
     parameters:
 		int nNeighbours;
 		int R;
-		int XLimit;
-		int YLimit;
+		int XLimit							= default(2000);
+		int YLimit							= default(2000);
 		
-		bool redrop = default(false);
+		bool redrop 						= default(false);
+		bool radiusAnalysis 				= default(false);
 		
 		int RNGPosition						= default(1);
 		
+		int distributionType				= default(0);			//0 for uniform 1 for normal 2 for grid
+		double mean							= default(0);			//mean for normal
+		double stdDev						= default(1);			//std dev
 		
 		@display("");    
 	

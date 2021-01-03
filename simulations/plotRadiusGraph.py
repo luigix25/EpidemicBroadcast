@@ -117,7 +117,7 @@ fileTitle = "Unlinked___Distribution(" + distribution + ")_Repetition(" + header
 save_path = os.path.join("graph","RadiusAnalysis")
 save_path = os.path.join(save_path,fileTitle)
 
-#print_graph(radiusValues, save_path, "Avg Users Unlinked")
+print_graph(radiusValues, save_path, "Avg Users Unlinked")
 
 fileTitle = "Neighbours___Distribution(" + distribution + ")_Repetition(" + header['numberRepetition'] + ")_CL(" + str(confidanceLevel) + ")_Redrop(" + header['redrop'] + ").png"
 save_path = os.path.join("graph","RadiusAnalysis")

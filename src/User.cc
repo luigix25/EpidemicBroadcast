@@ -137,7 +137,6 @@ void User::handleMessage(cMessage *msg)
         case WAITING:
 
             scheduledMessage = msg->dup();
-            //TODO: sistemareProb
 
             //ScheduleAt wants seconds and slotSize is in milliseconds
             delayTime = this->slotSize * this->T / ONE_SECOND;
@@ -161,7 +160,7 @@ void User::handleMessage(cMessage *msg)
             break;
 
         /* Waiting for Send and Done */
-        default: //TODO: pacchetti ricevuti dopo il done? Vengono ignorati è solo un placeholder
+        default:
             break;
 
     }
@@ -224,10 +223,9 @@ void User::handleCollision(){
         case LISTENING:
             this->receivedPacketsInTSlots--;
             break;
-/*
-//TODO: ha senso gestire collisioni in DONE? No, infatti vengono eliminate. [è solo un placeholder]
+
         case DONE:
-            break;*/
+            break;
     }
 
 }

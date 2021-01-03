@@ -1,4 +1,13 @@
-1) tempo di propagazione nullo, dato che sarebbe praticamente trascurabile ( chiedere conferma )
-2) intervallo T randomico, altrimenti collisioni assicurate ( chiedere )
-3) durata slot 1 secondo
-4) se ricevo più di m messaggi nell'intervallo, riparte il timer o mi fermo?
+# Epidemic Broadcast
+## Introduzione
+This study analyzes the flooding of a message in a network by exploiting the trickle
+relaying policy. To do so, a 2D floorplan is considered on which N users are randomly dropped, communication is performed per slot and each user sends a message
+(if it has to) to all neighbours in a radius R.
+The trickle relaying protocol provides that a user, upon receipt of a collision-free
+message, waits for T slots, if during that period it correctly receives less than m
+copies of the message, it relays it, otherwise it stops.
+Several scenarios will be evaluated in the course of the study, in particular:
+* sending the message after T slots or after T+λT slots, λT 2 N; λT 2 [0; T −1]
+* dropping user on 2D floorplan with uniform or normal distribution
+* consider topologies where users can be disconnected from the network containing the initiator or networks where all users can be reached by redropping
+those that are disconnected
